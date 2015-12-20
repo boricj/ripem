@@ -1,0 +1,28 @@
+STARTUP(ripem/startup.o)
+ENTRY(main)
+
+MEMORY
+{
+	dram : ORIGIN = 0x30000000, LENGTH = 32768K
+	sram : ORIGIN = 0x40000000, LENGTH = 64K
+}
+
+SECTIONS
+{
+	.text : ALIGN(8) {
+		*(.text.startup*);
+		*(.text*);
+	} > dram
+
+	.data : ALIGN(8) {
+		*(.data*);
+	} > dram
+
+	.rodata : ALIGN(8) {
+		*(.rodata*);
+	} > dram
+
+	.bss  : ALIGN(8) {
+		*(.bss*);
+	} > dram
+}
