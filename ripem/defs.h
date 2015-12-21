@@ -8,6 +8,8 @@
 #define PCLK  66666666
 
 // GPIO
+#define GPCCON    (volatile uint32_t*)0x56000020
+#define GPCDAT    (volatile uint32_t*)0x56000024
 #define GPHCON    (volatile uint32_t*)0x56000070
 
 // UART0

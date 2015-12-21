@@ -1,5 +1,6 @@
 #include "gdb_stub.h"
 
+#include "led.h"
 #include "lib.h"
 #include "serial.h"
 
@@ -199,8 +200,13 @@ void gdb_mainloop(void) {
 	char in[GDB_PACKET_BUFFER_LEN], out[GDB_PACKET_BUFFER_LEN];
 	int len, outLen;
 
+
 	while (1) {
+		led_set(LED_BLUE);
+
 		len = gdb_read_packet(in);
+
+		led_set(LED_BLUE | LED_RED);
 
 		if (len == -1) {
 			/* Bad checksum, NACK. */
