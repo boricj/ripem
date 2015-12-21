@@ -135,11 +135,10 @@ int load_elf(char *inPath, char *osrom) {
 	osrom_Hdr->e_entry = elf_Ehdr->e_entry;
 	osrom_Hdr->e_size = OSROM_SIZE;
 	osrom_Hdr->e_size_copy = OSROM_SIZE;
-	osrom_Hdr->e_loadaddr = elf_Phdr[0].p_paddr;
+	osrom_Hdr->e_loadaddr = elf_Phdr[0].p_paddr - 0x20;
 	memcpy(osrom_Hdr->e_ident, osHdr_ident, sizeof(osHdr_ident));
 
-	memset(osrom + OSROM_DATA_OFFSET, 0x00, elf_Phdr[0].p_memsz);
-	memset(osrom + OSROM_DATA_OFFSET + elf_Phdr[0].p_memsz, 0xFF, OSROM_DATA_SIZE - elf_Phdr[0].p_memsz);
+	memset(osrom + OSROM_DATA_OFFSET, 0x00, OSROM_DATA_SIZE);
 	memcpy(osrom + OSROM_DATA_OFFSET, elf_Data->d_buf, elf_Phdr[0].p_filesz);
 
 	status = 0;
@@ -270,8 +269,8 @@ int osrom2elf(char *inPath, char *outPath) {
 	elf_Phdr->p_type = PT_LOAD;
 	elf_Phdr->p_flags = PF_R | PF_W | PF_X;
 	elf_Phdr->p_offset = elf_ShdrData->sh_offset;
-	elf_Phdr->p_vaddr = osrom_Hdr->e_loadaddr;
-	elf_Phdr->p_paddr = osrom_Hdr->e_loadaddr;
+	elf_Phdr->p_vaddr = osrom_Hdr->e_loadaddr + 0x20;
+	elf_Phdr->p_paddr = osrom_Hdr->e_loadaddr + 0x20;
 	elf_Phdr->p_filesz = elf_Data->d_size;
 	elf_Phdr->p_memsz = elf_Data->d_size;
 

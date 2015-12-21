@@ -1,9 +1,9 @@
 STARTUP(ripem/startup.o)
-ENTRY(main)
+ENTRY(_entry)
 
 MEMORY
 {
-	dram : ORIGIN = 0x30000000, LENGTH = 32768K
+	dram : ORIGIN = 0x30000020, LENGTH = 33554400
 	sram : ORIGIN = 0x40000000, LENGTH = 64K
 }
 

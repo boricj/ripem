@@ -4,7 +4,7 @@ LDFLAGS = -lelf
 ARM_CC = arm-none-eabi-gcc
 ARM_AS = arm-none-eabi-as
 ARM_LD = arm-none-eabi-gcc
-ARM_CFLAGS = -Os -nostdlib -Wall -W -Wno-attributes -marm -mcpu=arm926ej-s -s -fPIE -ffreestanding -std=gnu1x
+ARM_CFLAGS = -Os -nostdlib -Wall -W -Wno-attributes -marm -mcpu=arm926ej-s -s -ffreestanding -std=gnu1x
 ARM_AFLAGS =
 ARM_LDFLAGS = -nostdlib -ffreestanding -s -n
 

@@ -42,6 +42,14 @@ int serial_getc(void) {
 	return *URXH0;
 }
 
+char serial_pollc(void) {
+	int c;
+
+	while ((c = serial_getc()) == -1);
+
+	return c;
+}
+
 void serial_putc(char c) {
 	/*
 	 * Do not take advantage of FIFO for now since we haven't
@@ -67,6 +75,8 @@ void serial_puts(const char *str) {
 	if (str == NULL)
 		return;
 
-	for (const char *p = str; *p; p++)
-		serial_putc(*p);
+	while (*str) {
+		serial_putc(*str);
+		str++;
+	}
 }
