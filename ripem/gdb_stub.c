@@ -83,14 +83,14 @@ void gdb_command_write_memory(char *in, int inLen, char *out, int *outLen) {
 	if (len == 4) {
 		uint32_t data = 0;
 		for (int i = 0; i < 8; i++)
-			data = data << 4 | hex2byte(*next++);
+			data |= hex2byte(*next++) << ((i % 2 ? i-1:i+1) * 4);
 
 		*(volatile uint32_t*)addr = data;
 	}
 	else if (len == 2) {
 		uint16_t data = 0;
 		for (int i = 0; i < 4; i++)
-			data = data << 4 | hex2byte(*next++);
+			data |= hex2byte(*next++) << ((i % 2 ? i-1:i+1) * 4);
 
 		*(volatile uint16_t*)addr = data;
 	}
@@ -98,7 +98,7 @@ void gdb_command_write_memory(char *in, int inLen, char *out, int *outLen) {
 		for (unsigned i = 0; i < len; i++) {
 			uint8_t data = 0;
 			for (int j = 0; j < 2; j++)
-				data = data << 4 | hex2byte(*next++);
+				data |= hex2byte(*next++) << ((1-j)*4);
 
 			*(volatile uint8_t*)addr = data;
 			addr++;
