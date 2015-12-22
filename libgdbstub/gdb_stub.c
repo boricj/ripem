@@ -144,13 +144,16 @@ void gdb_command_write_registers(char *in, int inLen, char *out, int *outLen) {
 }
 
 int gdb_read_packet(char *in) {
-	int cpt = 0;
+	int cpt = 0, ok_released = 0;
 	uint8_t chksum = 0;
 
 	while (1) {
 		int c;
 		while ((c = serial_getc()) == -1) {
-			if (keypad_get(KEY_ON))
+			if (keypad_get(KEY_ON) == 0)
+				ok_released = 1;
+
+			if (keypad_get(KEY_ON) && ok_released)
 				syscon_reset();
 		}
 
@@ -205,9 +208,6 @@ void gdb_write_packet(char *out, int len) {
 void gdb_mainloop(void) {
 	char in[GDB_PACKET_BUFFER_LEN], out[GDB_PACKET_BUFFER_LEN];
 	int len, outLen;
-
-	/* Wait until ON is released */
-	while (keypad_get(KEY_ON));
 
 	while (1) {
 		led_set(LED_BLUE);

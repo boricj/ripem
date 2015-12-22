@@ -1,0 +1,27 @@
+MEMORY
+{
+	dram : ORIGIN = 0x30000000, LENGTH = 32768K
+}
+
+SECTIONS
+{
+	.startup : ALIGN(8) {
+		*(.startup*);
+	} >dram
+
+	.text : ALIGN(8) {
+		*(.text*);
+	} >dram
+
+	.data : ALIGN(8) {
+		*(.data*);
+	} >dram
+
+	.rodata : ALIGN(8) {
+		*(.rodata*);
+	} >dram
+
+	.bss  : ALIGN(8) {
+		*(.bss*);
+	} >dram
+}
