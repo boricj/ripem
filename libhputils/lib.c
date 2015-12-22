@@ -3,6 +3,7 @@
 void* memcpy(void *dst, const void *src, unsigned n) {
 	uint8_t *u8_dst = dst;
 	const uint8_t *u8_src = src;
+
 	while (n--)
 		*u8_dst++ = *u8_src++;
 
@@ -11,6 +12,7 @@ void* memcpy(void *dst, const void *src, unsigned n) {
 
 void* memset(void * dst, int val, unsigned n) {
 	uint8_t *u8_dst = dst;
+
 	while (n--)
 		*u8_dst++ = (unsigned char)val;
 

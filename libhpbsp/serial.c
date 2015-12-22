@@ -6,7 +6,7 @@
 #include "lib.h"
 
 void serial_init(int baudrate) {
-	/* Floating point divisor lookup table */
+	/* Floating point divisor lookup table. */
 	const int clockPart[16] = {
 		0x0000, 0x0080, 0x0808, 0x0888,
 		0x2222, 0x4924, 0x4A52, 0x54AA,
@@ -14,19 +14,19 @@ void serial_init(int baudrate) {
 		0xDDDD, 0xDFDD, 0xDFDF, 0xFFDF
 	} ;
 
-	/* Enable TXD[0] and RXD[0] on port G */
+	/* Enable TXD[0] and RXD[0] on port G. */
 	uint32_t h_conf = *GPHCON;
 	h_conf &= 0xFFFFFFF0;
 	h_conf |= 0xA;
 	*GPHCON = h_conf;
 
 	/* Reset UART0 */
-	*UFCON0 = 0x7; /* Enable and reset FIFOs */
-	*UMCON0 = 0x0; /* No hardware handshake */
-	*ULCON0 = 0x3; /* 8N1 */
-	*UCON0 = 0x5;  /* Enable Rx and Tx polling */
+	*UFCON0 = 0x7; /* Enable and reset FIFOs. */
+	*UMCON0 = 0x0; /* No hardware handshake. */
+	*ULCON0 = 0x3; /* 8N1. */
+	*UCON0 = 0x5;  /* Enable Rx and Tx polling. */
 
-	/* Set speed */
+	/* Set speed. */
 	int clock = PCLK / baudrate - 16;
 	*UBRDIV0 = clock / 16;
 	*UDIVSLOT0 = clockPart[clock % 16];
@@ -35,7 +35,7 @@ void serial_init(int baudrate) {
 }
 
 int serial_getc(void) {
-	/* Check if Rx buffer is empty */
+	/* Check if Rx buffer is empty. */
 	if (((*UTRSTAT0) & (1 << 0)) == 0)
 		return -1;
 
@@ -52,15 +52,14 @@ char serial_pollc(void) {
 
 void serial_putc(char c) {
 	/*
-	 * Do not take advantage of FIFO for now since we haven't
-	 * figured out that part yet. Instead, just wait until FIFO is
-	 * empty.
+	 * Do not take advantage of Tx FIFO for now since we haven't figured out
+	 * that part yet. Instead, just wait until Tx FIFO is empty.
 	 */
 #if 0
-	/* Check if Tx FIFO is full */
+	/* Check if Tx FIFO is full. */
 	while (((*UFSTAT0) & (1 << 14)) == 1);
 #else
-	/* Add CR if we're sending LF */
+	/* Add CR if we're sending LF. */
 	if (c == '\n') {
 		while (((*UTRSTAT0) & (1 << 1)) == 0);
 		*UTXH0 = '\r';

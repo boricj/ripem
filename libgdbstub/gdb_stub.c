@@ -186,18 +186,19 @@ int gdb_read_packet(char *in) {
 
 void gdb_write_packet(char *out, int len) {
 	uint8_t chksum = 0;
+	char hexsum[2];
 
 	/* Start of packet marker. */
 	serial_putc('$');
 
 	/* Output payload. */
-	for (int i = 0; i < len; i++) {
-		serial_putc(out[i]);
-		chksum += out[i];
-	}
+	out[len] = 0;
+	serial_puts(out);
 
 	/* Output checksum. */
-	char hexsum[2];
+	for (int i = 0; i < len; i++)
+		chksum += out[i];
+
 	byte2hex(chksum, hexsum);
 
 	serial_putc('#');

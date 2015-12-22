@@ -10,6 +10,10 @@ void rtc_init(void) {
 void rtc_get_time(int *year, int *month, int *day, int *hour, int *min, int *sec) {
 	int r1_sec, r2_sec;
 
+	/*
+	 * Read in a loop if we ever manage to read everything across a minute
+	 * mark because we might read a garbled date.
+	 */
 	do {
 		r1_sec = bcd2byte(*BCDSEC);
 

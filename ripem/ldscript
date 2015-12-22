@@ -11,7 +11,8 @@ PHDRS {
 
 SECTIONS
 {
-	.text.start : ALIGN(8) {
+	/* Relocator from DRAM to SRAM. */
+	.startup : ALIGN(8) {
 		*(.start*);
 	} >dram_startup :load
 

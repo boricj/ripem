@@ -107,7 +107,7 @@ int load_elf(char *inPath, char *osrom) {
 		goto err0;
 	}
 
-	/* Read ELF and make sure it's correct enough */
+	/* Read ELF and make sure it's correct enough. */
 	Elf *elf;
 	Elf32_Ehdr *elf_Ehdr;
 	Elf32_Phdr *elf_Phdr;
@@ -130,7 +130,7 @@ int load_elf(char *inPath, char *osrom) {
 	FILE_CHECK(inPath, elf_Phdr[0].p_memsz <= OSROM_DATA_SIZE, "program too big", err2);
 	LIBELF_CHECK(inPath, elf_Data = elf_getdata_rawchunk(elf, elf_Phdr[0].p_offset, elf_Phdr[0].p_filesz, ELF_T_PHDR), err2);
 
-	/* Build OSROM image in memory */
+	/* Build OSROM image in memory. */
 	memset(osrom_Hdr, 0, sizeof(OSROM_Hdr));
 	osrom_Hdr->e_entry = elf_Ehdr->e_entry;
 	osrom_Hdr->e_size = OSROM_SIZE;
@@ -162,7 +162,7 @@ int elf2osrom(char *inPath, char *outPath) {
 		goto err0;
 	}
 
-	/* Open OSROM for writing */
+	/* Open OSROM for writing. */
 	int outFd = open(outPath, O_WRONLY|O_CREAT|O_TRUNC, 0666);
 	if (outFd < 0) {
 		perror(outPath);
@@ -188,14 +188,14 @@ err0:
 int osrom2elf(char *inPath, char *outPath, int size) {
 	int status = -1;
 
-	/* Open OSROM for reading */
+	/* Open OSROM for reading. */
 	char osrom[OSROM_SIZE];
 	OSROM_Hdr *osrom_Hdr = (OSROM_Hdr*)osrom;
 
 	if (load_osrom(inPath, osrom) < 0)
 		goto err0;
 
-	/* Open ELF file for writing */
+	/* Open ELF file for writing. */
 	int outFd = open(outPath, O_WRONLY | O_CREAT, 0777);
 	if (outFd < 0) {
 		perror(outPath);
@@ -209,10 +209,10 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 	Elf_Data *elf_Data, *elf_DataStr;
 	Elf32_Shdr *elf_ShdrData, *elf_ShdrDataStr;
 
-	/* Create ELF in-memory file */
+	/* Create ELF in-memory file. */
 	LIBELF_CHECK(inPath, elf = elf_begin(outFd, ELF_C_WRITE, NULL), err1);
 
-	/* Create ELF header */
+	/* Create ELF header. */
 	LIBELF_CHECK(inPath, elf_Ehdr = elf32_newehdr(elf), err2);
 
 	elf_Ehdr->e_ident[EI_DATA] = ELFDATA2LSB;
@@ -222,7 +222,7 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 	elf_Ehdr->e_entry = osrom_Hdr->e_entry;
 
 	/*
-	 * Payload section
+	 * Payload section.
 	 */
 	LIBELF_CHECK(inPath, elf_Phdr = elf32_newphdr(elf, 1), err2);
 	LIBELF_CHECK(inPath, elf_Scn = elf_newscn(elf), err2);
@@ -242,7 +242,7 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 	elf_ShdrData->sh_addr = osrom_Hdr->e_loadaddr;
 
 	/*
-	 * Strings table
+	 * Strings table.
 	 */
 	LIBELF_CHECK(inPath, elf_ScnStr = elf_newscn(elf), err2);
 	LIBELF_CHECK(inPath, elf_DataStr = elf_newdata(elf_ScnStr), err2);
@@ -265,7 +265,7 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 
 	LIBELF_CHECK(inPath, elf_update(elf, ELF_C_NULL) >= 0, err2);
 
-	/* Write LOAD program header */
+	/* Write LOAD program header. */
 	elf_Phdr->p_type = PT_LOAD;
 	elf_Phdr->p_flags = PF_R | PF_W | PF_X;
 	elf_Phdr->p_offset = elf_ShdrData->sh_offset;
@@ -274,7 +274,7 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 	elf_Phdr->p_filesz = elf_Data->d_size;
 	elf_Phdr->p_memsz = elf_Data->d_size;
 
-	/* Write to file */
+	/* Write to file. */
 	elf_flagphdr(elf, ELF_C_SET, ELF_F_DIRTY);
 
 	LIBELF_CHECK(inPath, elf_update(elf, ELF_C_WRITE) > 0, err2);

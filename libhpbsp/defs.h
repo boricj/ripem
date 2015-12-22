@@ -1,19 +1,13 @@
 #include <stdint.h>
 
-// Clock frequencies
+/* Clock frequencies. */
 #define HCLK 133333333
 #define PCLK  66666666
 
-// SYSCON
+/* SYSCON */
 #define SWRST     (volatile uint32_t*)0x4C000044
 
-// GPIO
-#define GPCCON    (volatile uint32_t*)0x56000020
-#define GPCDAT    (volatile uint32_t*)0x56000024
-#define GPGDAT    (volatile uint32_t*)0x56000064
-#define GPHCON    (volatile uint32_t*)0x56000070
-
-// UART0
+/* UART0 */
 #define ULCON0    (volatile uint32_t*)0x50000000
 #define UCON0     (volatile uint32_t*)0x50000004
 #define UFCON0    (volatile uint32_t*)0x50000008
@@ -27,7 +21,13 @@
 #define UBRDIV0   (volatile uint32_t*)0x50000028
 #define UDIVSLOT0 (volatile uint32_t*)0x5000002C
 
-// BCD
+/* GPIO */
+#define GPCCON    (volatile uint32_t*)0x56000020
+#define GPCDAT    (volatile uint32_t*)0x56000024
+#define GPGDAT    (volatile uint32_t*)0x56000064
+#define GPHCON    (volatile uint32_t*)0x56000070
+
+/* RTC */
 #define BCDSEC    (volatile uint32_t*)0x57000070
 #define BCDMIN    (volatile uint32_t*)0x57000074
 #define BCDHOUR   (volatile uint32_t*)0x57000078

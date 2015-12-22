@@ -54,6 +54,7 @@ void launch_payload(unsigned r0, void *initial_stack) {
 	uint32_t entry;
 	char buffer[32];
 
+	/* Dump info about payload. */
 	serial_puts("Payload address : 0x");
 	serial_puts(itoa((uint32_t)payload_ptr, buffer, 16));
 	serial_putc('\n');
@@ -80,9 +81,7 @@ void launch_payload(unsigned r0, void *initial_stack) {
 		serial_puts(itoa(entry, buffer, 16));
 		serial_puts("\nLoading successful, jumping into payload...\n");
 
-		void (*entry_fct)(uint32_t arg0) = (void (*)(uint32_t))entry;
-		(*entry_fct)(r0);
-//		run_elf(r0, initial_stack, entry);
+		run_elf(r0, initial_stack, entry);
 
 	case ELF_ERR_INVALID_HEADER:
 		serial_puts("Invalid ELF header! Aborting.\n");
@@ -111,6 +110,9 @@ void main(unsigned r0, void *initial_stack) {
 	serial_init(115200);
 	rtc_init();
 
+	/*
+	 * Print propaganda early on.
+	 */
 	serial_puts("\nRip'Em version ");
 	serial_puts(ripem_version);
 	serial_putc('\n');
@@ -120,13 +122,17 @@ void main(unsigned r0, void *initial_stack) {
 	serial_putc('\n');
 
 	/*
-	 * Align ourselves on the next second, then wait one second.
+	 * Align ourselves on the next second, then wait for one second.
 	 * If the ON key is kept pressed during all that time, run the GDB stub.
 	 * Otherwise, run the payload.
 	 */
 	for (int delay = 0; delay < 2; delay++) {
 		rtc_get_time(NULL, NULL, NULL, NULL, NULL, &sec);
 		prev_sec = sec;
+
+		/*
+		 * XXX : abuse the RTC for sleeping for about a second.
+		 */
 		do {
 			rtc_get_time(NULL, NULL, NULL, NULL, NULL, &sec);
 			if (keypad_get(KEY_ON) == 0)
