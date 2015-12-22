@@ -1,8 +1,5 @@
 #include <stdint.h>
 
-// Common values
-#define NULL 0
-
 // Clock frequencies
 #define HCLK 133333333
 #define PCLK  66666666
@@ -13,6 +10,7 @@
 // GPIO
 #define GPCCON    (volatile uint32_t*)0x56000020
 #define GPCDAT    (volatile uint32_t*)0x56000024
+#define GPGDAT    (volatile uint32_t*)0x56000064
 #define GPHCON    (volatile uint32_t*)0x56000070
 
 // UART0
@@ -28,3 +26,12 @@
 #define URXH0     (volatile uint8_t* )0x50000024
 #define UBRDIV0   (volatile uint32_t*)0x50000028
 #define UDIVSLOT0 (volatile uint32_t*)0x5000002C
+
+// BCD
+#define BCDSEC    (volatile uint32_t*)0x57000070
+#define BCDMIN    (volatile uint32_t*)0x57000074
+#define BCDHOUR   (volatile uint32_t*)0x57000078
+#define BCDDATE   (volatile uint32_t*)0x5700007C
+#define BCDDAY    (volatile uint32_t*)0x57000080
+#define BCDMON    (volatile uint32_t*)0x57000084
+#define BCDYEAR   (volatile uint32_t*)0x57000088

@@ -57,3 +57,43 @@ void byte2hex(uint8_t byte, char *hex) {
 		byte <<= 4;
 	}
 }
+
+uint8_t bcd2byte(uint8_t bcd) {
+	return 10 * ((bcd & 0xF0) >> 4) + (bcd & 0xF);
+}
+
+char* itoa(int val, char *str, int base) {
+	if (str == NULL || base < 2 || base > 36)
+		return NULL;
+
+	char *str_bak = str;
+	char buf[32];
+
+	if (val == 0)
+		*str++ = '0';
+	else if (base == 10 && val < 0) {
+		*str++ = '-';
+		val = -val;
+	}
+	else {
+		int cpt = 0;
+
+		while (val != 0) {
+			int digit = val % base;
+
+			if (digit < 10)
+				buf[cpt++] = '0' + digit;
+			else
+				buf[cpt++] = 'a' + digit - 10;
+
+			val /= base;
+		}
+
+		while(--cpt >= 0)
+			*str++ = buf[cpt];
+	}
+
+	*str = 0;
+
+	return str_bak;
+}

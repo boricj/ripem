@@ -1,8 +1,10 @@
 #include "gdb_stub.h"
 
+#include "keypad.h"
 #include "led.h"
 #include "lib.h"
 #include "serial.h"
+#include "syscon.h"
 
 void gdb_command_status(char *in, int inLen, char *out, int *outLen) {
 	(void)in;
@@ -146,7 +148,11 @@ int gdb_read_packet(char *in) {
 	uint8_t chksum = 0;
 
 	while (1) {
-		char c = serial_pollc();
+		int c;
+		while ((c = serial_getc()) == -1) {
+			if (keypad_get(KEY_ON))
+				syscon_reset();
+		}
 
 		if (c == '$') {
 			/* Start of packet marker : start to record contents. */
@@ -200,6 +206,8 @@ void gdb_mainloop(void) {
 	char in[GDB_PACKET_BUFFER_LEN], out[GDB_PACKET_BUFFER_LEN];
 	int len, outLen;
 
+	/* Wait until ON is released */
+	while (keypad_get(KEY_ON));
 
 	while (1) {
 		led_set(LED_BLUE);
