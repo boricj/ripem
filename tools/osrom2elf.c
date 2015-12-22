@@ -185,7 +185,7 @@ err0:
 /*
  * Convert an OSROM file to ELF.
  */
-int osrom2elf(char *inPath, char *outPath) {
+int osrom2elf(char *inPath, char *outPath, int size) {
 	int status = -1;
 
 	/* Open OSROM for reading */
@@ -232,7 +232,7 @@ int osrom2elf(char *inPath, char *outPath) {
 	elf_Data->d_off = 0;
 	elf_Data->d_buf = osrom + OSROM_DATA_OFFSET;
 	elf_Data->d_type = ELF_T_BYTE;
-	elf_Data->d_size = osrom_Hdr->e_size - OSROM_DATA_OFFSET;
+	elf_Data->d_size = size;
 	elf_Data->d_version = 1;
 
 	LIBELF_CHECK(inPath, elf_ShdrData = elf32_getshdr(elf_Scn), err2);
@@ -315,17 +315,9 @@ conv_mode get_conv_mode(char *argv0, char **base_name) {
 int main(int argc, char *argv[]) {
 	int status = 1;
 	char *basename;
+	int size = OSROM_DATA_SIZE;
 
 	conv_mode mode = get_conv_mode(argv[0], &basename);
-	if (mode == CONV_UNKNOWN) {
-		fprintf(stderr, "utility must be named elf2osrom or osrom2elf\n");
-		goto err0;
-	}
-
-	if (argc != 3) {
-		fprintf(stderr, "usage: %s in out\n", basename);
-		goto err0;
-	}
 
 	if (elf_version(1) == EV_NONE) {
 		ERR_LIBELF();
@@ -334,12 +326,30 @@ int main(int argc, char *argv[]) {
 
         switch (mode) {
 	case CONV_ELF2OSROM:
+		if (argc != 3) {
+			fprintf(stderr, "usage: %s in out\n", basename);
+			goto err0;
+		}
+
 		status = elf2osrom(argv[1], argv[2]) < 0 ? 1 : 0;
 		break;
+
 	case CONV_OSROM2ELF:
-		status = osrom2elf(argv[1], argv[2]) < 0 ? 1 : 0;
+		if (argc == 4) {
+			if (sscanf(argv[3], "%i", &size) != 1)
+				size = -1;
+		}
+
+		if (argc < 2 || argc > 4 || size < 0 || size > OSROM_DATA_SIZE) {
+			fprintf(stderr, "usage: %s in out [truncate_size]\n", basename);
+			goto err0;
+		}
+
+		status = osrom2elf(argv[1], argv[2], size) < 0 ? 1 : 0;
 		break;
+
 	default:
+		fprintf(stderr, "utility must be named elf2osrom or osrom2elf\n");
 		break;
 	}
 
