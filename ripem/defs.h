@@ -7,6 +7,9 @@
 #define HCLK 133333333
 #define PCLK  66666666
 
+// SYSCON
+#define SWRST     (volatile uint32_t*)0x4C000044
+
 // GPIO
 #define GPCCON    (volatile uint32_t*)0x56000020
 #define GPCDAT    (volatile uint32_t*)0x56000024
