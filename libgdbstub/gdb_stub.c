@@ -6,6 +6,30 @@
 #include "serial.h"
 #include "syscon.h"
 
+uint32_t gdb_regs[16];
+
+void gdb_read_hex(void *addr, char *buffer, int len) {
+	uint8_t *ptr = addr;
+
+	for (int i = 0; i < len; i++) {
+		uint8_t data = *ptr++;
+		byte2hex(data, buffer);
+		buffer += 2;
+	}
+}
+
+void gdb_write_hex(void *addr, char *buffer, int len) {
+	uint8_t *ptr = addr;
+
+	for (int i = 0; i < len; i++) {
+		uint8_t data = 0;
+		for (int j = 0; j < 2; j++)
+			data |= hex2byte(*buffer++) << ((1-j)*4);
+
+		*ptr++ = data;
+	}
+}
+
 void gdb_command_status(char *in, int inLen, char *out, int *outLen) {
 	(void)in;
 	(void)inLen;
@@ -61,14 +85,8 @@ void gdb_command_read_memory(char *in, int inLen, char *out, int *outLen) {
 		*outLen = 4;
 	}
 	else {
-		unsigned i;
-
-		for (i = 0; i < len; i++) {
-			uint8_t data = *(volatile uint8_t*)addr;
-			byte2hex(data, out + 2*i);
-		}
-
-		*outLen = 2*i;
+		gdb_read_hex((void*)addr, out, len);
+		*outLen = 2*len;
 	}
 }
 
@@ -97,16 +115,8 @@ void gdb_command_write_memory(char *in, int inLen, char *out, int *outLen) {
 
 		*(volatile uint16_t*)addr = data;
 	}
-	else {
-		for (unsigned i = 0; i < len; i++) {
-			uint8_t data = 0;
-			for (int j = 0; j < 2; j++)
-				data |= hex2byte(*next++) << ((1-j)*4);
-
-			*(volatile uint8_t*)addr = data;
-			addr++;
-		}
-	}
+	else
+		gdb_write_hex((void*)addr, next, len);
 
 	out[0] = 'O';
 	out[1] = 'K';
@@ -121,10 +131,12 @@ void gdb_command_read_registers(char *in, int inLen, char *out, int *outLen) {
 	const int EXTRA_REGS = 26;
 
 	/*
-	 * XXX: can't read from registers yet, we return all zeroes.
+	 * XXX: only first 16 registers supported.
 	 */
 
-	for (int i = 0; i < 16 + EXTRA_REGS; i++)
+	gdb_read_hex(gdb_regs, out, 16*4);
+
+	for (int i = 16; i < 16 + EXTRA_REGS; i++)
 		memset(&out[i*8], '0', 8);
 
 	*outLen = (16 + EXTRA_REGS) * 8;
@@ -135,8 +147,10 @@ void gdb_command_write_registers(char *in, int inLen, char *out, int *outLen) {
 	(void)inLen;
 
 	/*
-	 * XXX: can't write to registers yet, ignore command.
+	 * XXX: only first 16 registers supported.
 	 */
+
+	gdb_write_hex(gdb_regs, in+1, 16*4);
 
 	out[0] = 'O';
 	out[1] = 'K';
@@ -206,9 +220,12 @@ void gdb_write_packet(char *out, int len) {
 	serial_putc(hexsum[1]);
 }
 
-void gdb_mainloop(void) {
+void gdb_mainloop(uint32_t r0, void *initial_stack) {
 	char in[GDB_PACKET_BUFFER_LEN], out[GDB_PACKET_BUFFER_LEN];
 	int len, outLen;
+
+	gdb_regs[0] = r0;
+	gdb_regs[13] = (uint32_t)initial_stack;
 
 	while (1) {
 		led_set(LED_BLUE);
@@ -227,6 +244,9 @@ void gdb_mainloop(void) {
 			serial_putc('+');
 
 		switch (in[0]) {
+		case 'c':
+			gdb_command_continue(in, len, out, &outLen);
+			break;
 		case 'g':
 			gdb_command_read_registers(in, len, out, &outLen);
 			break;

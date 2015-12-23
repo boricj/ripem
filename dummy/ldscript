@@ -21,7 +21,9 @@ SECTIONS
 		*(.rodata*);
 	} >dram
 
+	_bss_start = .;
 	.bss  : ALIGN(8) {
 		*(.bss*);
 	} >dram
+	_bss_end = .;
 }

@@ -28,15 +28,17 @@ SECTIONS
 
 	.rodata : ALIGN(8) {
 		*(.rodata*);
-	} >sram AT>dram :load
-
-	.bss : ALIGN(8) {
-		*(.bss*);
 
 		_rel_end = .;
 	} >sram AT>dram :load
 
-	.payload : ALIGN(8) {
+	_bss_start = .;
+	.bss : ALIGN(8) {
+		*(.bss*);
+	} >sram :load
+	_bss_end = .;
+
+	.payload : ALIGN(2048) {
 		*(.payload*);
 	} >dram :load
 }

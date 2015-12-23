@@ -8,6 +8,8 @@
 #include "gdb_stub.h"
 
 void main(void) {
+	int leds = 0x7, prev_sec, sec, ok_released = 0;
+
 	led_init();
 	keypad_init();
 	serial_init(115200);
@@ -15,10 +17,15 @@ void main(void) {
 
 	serial_puts("Hello world from dummy payload!\n");
 
-	int leds = 0x7, prev_sec, sec = -1, ok_released = 0;
-
+	/* Align ourselves on the next second for drama purposes. */
+	rtc_get_time(NULL, NULL, NULL, NULL, NULL, &prev_sec);
 	do {
-		serial_puts("Changing leds...\n");
+		rtc_get_time(NULL, NULL, NULL, NULL, NULL, &sec);
+	} while (prev_sec == sec);
+
+	/* Do something pretty. */
+	do {
+		serial_puts("Changing LEDs...\n");
 
 		led_set(leds);
 		leds = (leds + 1) % 8;

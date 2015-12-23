@@ -101,6 +101,9 @@ $(LIBGDBSTUB): $(LIBGDBSTUB_OBJ)
 libgdbstub/%.o: libgdbstub/%.c
 	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
 
+libgdbstub/%.o: libgdbstub/%.S
+	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
+
 #
 # RipEm
 #

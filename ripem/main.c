@@ -141,7 +141,7 @@ void main(unsigned r0, void *initial_stack) {
 	}
 
 	serial_puts("Launching GDB stub...\n");
-	gdb_mainloop();
+	gdb_mainloop(r0, initial_stack);
 
 launch_payload:
 	serial_puts("Loading payload...\n");
