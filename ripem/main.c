@@ -15,38 +15,6 @@ const char *ripem_version = "0.0.0";
 extern uint32_t _binary_payload_start;
 extern uint32_t _binary_payload_size;
 
-void announce_time() {
-	int year, month, day, hour, min, sec;
-	char buffer[32];
-
-	rtc_get_time(&year, &month, &day, &hour, &min, &sec);
-
-	/* Print date with the american style. */
-	serial_puts(itoa(year, buffer, 10));
-	serial_putc('/');
-	serial_puts(itoa(day, buffer, 10));
-	serial_putc('/');
-	serial_puts(itoa(month, buffer, 10));
-	serial_putc(' ');
-
-	/* Print time. */
-	if (hour < 10)
-		serial_putc('0');
-	serial_puts(itoa(hour, buffer, 10));
-	serial_putc(':');
-
-	if (min < 10)
-		serial_putc('0');
-	serial_puts(itoa(min, buffer, 10));
-	serial_putc(':');
-
-	if (sec < 10)
-		serial_putc('0');
-	serial_puts(itoa(sec, buffer, 10));
-
-	serial_putc('\n');
-}
-
 void launch_payload(unsigned r0, void *initial_stack) {
 	void *payload_ptr = &_binary_payload_start;
 	uint32_t payload_size = (uint32_t)&_binary_payload_size;
@@ -115,11 +83,7 @@ void main(unsigned r0, void *initial_stack) {
 	 */
 	serial_puts("\nRip'Em version ");
 	serial_puts(ripem_version);
-	serial_putc('\n');
-
-	serial_puts("Current time : ");
-	announce_time();
-	serial_putc('\n');
+	serial_puts("\n\n");
 
 	/*
 	 * Align ourselves on the next second, then wait for one second.
