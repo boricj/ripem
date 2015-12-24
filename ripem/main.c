@@ -8,7 +8,7 @@
 
 #include "gdb_stub.h"
 
-const char *ripem_version = "0.0.0";
+const char *ripem_version = "0.0.1";
 
 #define PAYLOAD_STAGING_AREA 0x31000000
 
