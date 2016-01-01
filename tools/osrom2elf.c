@@ -7,6 +7,8 @@
 #include <libgen.h>
 #include <libelf.h>
 
+#include "libelf_check_macros.h"
+
 typedef struct osrom_hdr {
 	Elf32_Addr e_entry;
 	unsigned char e_pad1[4];
@@ -28,32 +30,6 @@ typedef enum {
 const int OSROM_SIZE = 1024*1024;
 const int OSROM_DATA_OFFSET = sizeof(OSROM_Hdr);
 const int OSROM_DATA_SIZE = OSROM_SIZE - OSROM_DATA_OFFSET;
-
-#define ERR_LIBELF() do { \
-	fprintf(stderr, "libelf: %s\n", elf_errmsg(elf_errno())); \
-} while (0)
-
-#define ERR_LIBELF_FILE(file) do { \
-	fprintf(stderr, "%s: %s\n", file, elf_errmsg(elf_errno())); \
-} while (0)
-
-#define ERR_FILE(file, err) do { \
-	fprintf(stderr, "%s: %s\n", file, err); \
-} while (0)
-
-#define FILE_CHECK(file, a, err, go) do { \
-	if (!(a)) { \
-		ERR_FILE(file, err); \
-		goto go; \
-	} \
-} while(0)
-
-#define LIBELF_CHECK(file, a, b) do { \
-	if (!(a)) { \
-		ERR_LIBELF_FILE(file); \
-		goto b; \
-	} \
-} while(0)
 
 /*
  * Load an OSROM file in memory.

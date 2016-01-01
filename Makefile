@@ -11,8 +11,9 @@ ARM_LDFLAGS = -nostdlib -ffreestanding -s -n
 
 ELF2OSROM = tools/elf2osrom
 OSROM2ELF = tools/osrom2elf
+UPLOAD_ELF = tools/upload_elf
 
-TOOLS = $(ELF2OSROM) $(OSROM2ELF)
+TOOLS = $(ELF2OSROM) $(OSROM2ELF) $(UPLOAD_ELF)
 
 LIBHPBSP = libhpbsp/libhpbsp.a
 LIBHPBSP_SRC = $(wildcard libhpbsp/*.c) $(wildcard libhpbsp/*.S)
@@ -59,6 +60,9 @@ clean:
 #
 
 $(OSROM2ELF): tools/osrom2elf.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lelf
+
+$(UPLOAD_ELF): tools/upload_elf.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lelf
 
 $(ELF2OSROM): $(OSROM2ELF)
