@@ -19,6 +19,28 @@ void* memset(void * dst, int val, unsigned n) {
 	return u8_dst;
 }
 
+char* strcat(char *dst, const char *src)
+{
+	char *dst_copy = dst;
+
+	while (*dst)
+		dst++;
+
+	while ((*dst++ = *src++));
+
+	return dst_copy;
+}
+
+int strlen(const char *str)
+{
+	int s = 0;
+
+	while (*str++)
+		s++;
+
+	return s;
+}
+
 void delay(int cycles) {
 	while (cycles--);
 }

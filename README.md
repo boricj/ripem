@@ -1,8 +1,6 @@
 # Rip'Em
 Rip'Em is a 3rd party firmware for the HP Prime calculator.
 
-For now, unless you can connect to the 3.3v TTL serial port inside the calculator nothing _too_ exciting will happen.
-
 As always : please void your warranty in a responsible manner. I will decline any responsibility should you turn your HP Prime into the thinnest CAS calculator brick available currently on the market.
 
 ## How to build
@@ -36,7 +34,7 @@ To boot the payload :
  * Cold-boot the calculator ;
  * Immediately release the `ON` key.
 
-A dummy payload is provided by default to cycle the LEDs.
+A dummy payload is provided by default to cycle the LEDs and show the current time on the screen. To reset the calculator, press the `ON` key.
 
 The official `PRIME_OS.ROM` can also be launched as a payload, provided one uses the truncating ability of `osrom2elf` to make it fit.
 

@@ -6,7 +6,9 @@
 #define NULL 0
 
 void* memcpy(void *dst, const void *src, unsigned n);
-void* memset(void * dst, int val, unsigned n);
+void* memset(void *dst, int val, unsigned n);
+char* strcat(char *dst, const char *src);
+int strlen(const char *str);
 
 void delay(int cycles);
 

@@ -7,6 +7,12 @@
 /* SYSCON */
 #define SWRST     (volatile uint32_t*)0x4C000044
 
+/* LCD */
+#define VIDCON0      (volatile uint32_t*)0x4C800000
+#define WINCON0      (volatile uint32_t*)0x4C800014
+#define VIDW00ADD0B0 (volatile uint32_t*)0x4C800064
+#define VIDW00ADD0B1 (volatile uint32_t*)0x4C800068
+
 /* UART0 */
 #define ULCON0    (volatile uint32_t*)0x50000000
 #define UCON0     (volatile uint32_t*)0x50000004
@@ -22,6 +28,7 @@
 #define UDIVSLOT0 (volatile uint32_t*)0x5000002C
 
 /* GPIO */
+#define GPBDAT    (volatile uint32_t*)0x56000014
 #define GPCCON    (volatile uint32_t*)0x56000020
 #define GPCDAT    (volatile uint32_t*)0x56000024
 #define GPGDAT    (volatile uint32_t*)0x56000064
