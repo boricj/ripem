@@ -49,6 +49,11 @@ int lcd_get_active_buffer(void)
 
 void lcd_set_active_buffer(int buffer)
 {
+	/* If video circuits are active, wait until screen isn't active. */
+	if ((*VIDCON0 & 0x3) == 0x3) {
+		while ((*VIDCON1 & 0x6000) == 0x4000);
+	}
+
 	buffer &= 0x1;
 	*WINCON0 = (*WINCON0 & 0xFF7FFFFF) | (buffer << 23);
 }

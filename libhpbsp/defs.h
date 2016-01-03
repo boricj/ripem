@@ -9,6 +9,7 @@
 
 /* LCD */
 #define VIDCON0      (volatile uint32_t*)0x4C800000
+#define VIDCON1      (volatile uint32_t*)0x4C800004
 #define WINCON0      (volatile uint32_t*)0x4C800014
 #define VIDW00ADD0B0 (volatile uint32_t*)0x4C800064
 #define VIDW00ADD0B1 (volatile uint32_t*)0x4C800068
@@ -31,6 +32,7 @@
 #define GPBDAT    (volatile uint32_t*)0x56000014
 #define GPCCON    (volatile uint32_t*)0x56000020
 #define GPCDAT    (volatile uint32_t*)0x56000024
+#define GPDDAT    (volatile uint32_t*)0x56000034
 #define GPGDAT    (volatile uint32_t*)0x56000064
 #define GPHCON    (volatile uint32_t*)0x56000070
 

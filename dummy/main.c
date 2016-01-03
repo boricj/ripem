@@ -47,7 +47,7 @@ void format_time(char *buf)
 
 void main(void)
 {
-	int leds = 0x7, prev_sec, sec, ok_released = 0;
+	int leds = 0x7, prev_sec, sec, ok_released = 0, ok_pressed = 0;
 	char buffer[128];
 	uint8_t *screen;
 
@@ -78,30 +78,50 @@ void main(void)
 		led_set(leds);
 		leds = (leds + 1) % 8;
 
-		/* Double buffer for flicker-free operation. */
-		if (lcd_get_active_buffer() == 0)
-			screen = screen1;
-		else
-			screen = screen0;
-
-		/* Print message. */
-		format_time(buffer);
-		memset(screen, 0xFF, sizeof(screen0));
-		font_draw_text_r8g8b8(hello, (320 - (strlen(hello)*9)) / 2, 80, screen, 0x0, 0xFFFFFF);
-		font_draw_text_r8g8b8(buffer, (320 - (strlen(buffer)*9)) / 2, 160, screen, 0x0, 0xFFFFFF);
-
-		if (lcd_get_active_buffer() == 0)
-			lcd_set_active_buffer(1);
-		else
-			lcd_set_active_buffer(0);
-
 		do {
+			keypad_scan();
+
+			/* Keep track of time. */
 			prev_sec = sec;
 			rtc_get_time(NULL, NULL, NULL, NULL, NULL, &sec);
 
+			/* Use double buffer for flicker-free operation. */
+			if (lcd_get_active_buffer() == 0)
+				screen = screen1;
+			else
+				screen = screen0;
+
+			memset(screen, 0xFF, sizeof(screen0));
+			/* Print message. */
+			font_draw_text_r8g8b8(hello, (320 - (strlen(hello)*9)) / 2, 80, screen, 0x0, 0xFFFFFF);
+
+			/* Print time. */
+			format_time(buffer);
+			font_draw_text_r8g8b8(buffer, (320 - (strlen(buffer)*9)) / 2, 160, screen, 0x0, 0xFFFFFF);
+
+			/* Print keys. */
+			buffer[0] = 0;
+			strcat(buffer, "Keys:");
+			for (key_id i = KEY_A; i < KEY_LAST; i++) {
+				if (keypad_get(i)) {
+					strcat(buffer, " ");
+					strcat(buffer, keypad_get_name(i));
+				}
+			}
+			font_draw_text_r8g8b8(buffer, 0, 224, screen, 0x0, 0xFFFFFF);
+
+			/* Change buffer to show on screen. */
+			if (lcd_get_active_buffer() == 0)
+				lcd_set_active_buffer(1);
+			else
+				lcd_set_active_buffer(0);
+
+			/* Reboot if the ON key is pressed. */
 			if (keypad_get(KEY_ON) == 0)
 				ok_released = 1;
-			if (keypad_get(KEY_ON) && ok_released)
+			if ((keypad_get(KEY_ON) == 1) && ok_released)
+				ok_pressed = 1;
+			if ((keypad_get(KEY_ON) == 0) && ok_pressed)
 				syscon_reset();
 		} while (prev_sec == sec);
 	} while(1);
