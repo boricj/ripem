@@ -3,7 +3,6 @@
 #include <stdint.h>
 
 #include "defs.h"
-#include "lib.h"
 
 void serial_init(int baudrate) {
 	/* Floating point divisor lookup table. */
@@ -30,8 +29,6 @@ void serial_init(int baudrate) {
 	int clock = PCLK / baudrate - 16;
 	*UBRDIV0 = clock / 16;
 	*UDIVSLOT0 = clockPart[clock % 16];
-
-	delay(500);
 }
 
 int serial_getc(void) {
@@ -71,7 +68,7 @@ void serial_putc(char c) {
 }
 
 void serial_puts(const char *str) {
-	if (str == NULL)
+	if (str == 0)
 		return;
 
 	while (*str) {

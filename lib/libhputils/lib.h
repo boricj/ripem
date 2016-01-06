@@ -17,8 +17,6 @@ uint32_t hex2word(char *hex, char **next);
 
 void byte2hex(uint8_t byte, char *hex);
 
-uint8_t bcd2byte(uint8_t bcd);
-
 char* itoa(int val, char *str, int base);
 
 #endif

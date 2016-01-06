@@ -1,0 +1,12 @@
+OSROM2ELF_DIR = tools/osrom2elf
+
+OSROM2ELF = $(OSROM2ELF_DIR)/osrom2elf
+ELF2OSROM = $(OSROM2ELF_DIR)/elf2osrom
+
+$(OSROM2ELF): $(OSROM2ELF_DIR)/osrom2elf.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lelf
+
+$(ELF2OSROM): $(OSROM2ELF)
+	ln -sf osrom2elf $@
+
+CLEAN_FILES += $(OSROM2ELF) $(ELF2OSROM)

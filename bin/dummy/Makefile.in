@@ -1,0 +1,17 @@
+DUMMY_DIR = bin/dummy
+
+DUMMY_ELF = $(DUMMY_DIR)/dummy.elf
+DUMMY_SRC = $(call LIST_SRCS,$(DUMMY_DIR))
+DUMMY_OBJ = $(call SUBST_OBJ,$(DUMMY_SRC),$(DUMMY_DIR))
+
+$(DUMMY_ELF): $(DUMMY_OBJ) $(DUMMY) $(LIBHPBSP) $(LIBHPUTILS)
+	$(ARM_LD) $(ARM_LDFLAGS) -T bin/dummy/ldscript $^ -lgcc -o $@ --entry 0x30000000
+
+$(DUMMY_DIR)/%.o: $(DUMMY_DIR)/%.c
+	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
+
+$(DUMMY_DIR)/%.o: $(DUMMY_DIR)/%.S
+	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
+
+BUILD_FILES += $(DUMMY_ELF)
+CLEAN_FILES += $(DUMMY_DIR)/*.elf $(DUMMY_DIR)/*.o

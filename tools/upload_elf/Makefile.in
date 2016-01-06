@@ -1,0 +1,8 @@
+UPLOAD_ELF_DIR = tools/upload_elf
+
+UPLOAD_ELF = $(UPLOAD_ELF_DIR)/upload_elf
+
+$(UPLOAD_ELF): $(UPLOAD_ELF_DIR)/upload_elf.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lelf
+
+CLEAN_FILES += $(UPLOAD_ELF)

@@ -28,7 +28,6 @@ void keypad_scan(void)
 {
 	for (int dbit = 0; dbit < 8; dbit++) {
 		*GPDDAT = (1 << dbit);
-		delay(-1);
 
 		for (int gbit = 0; gbit < 8; gbit++) {
 			if (key_gpio[dbit][gbit] != KEY_NONE) {

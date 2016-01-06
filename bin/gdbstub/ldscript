@@ -5,7 +5,8 @@ MEMORY
 	dram : ORIGIN = 0x30002000, LENGTH = 33546240
 }
 
-PHDRS {
+PHDRS
+{
 	load PT_LOAD;
 }
 

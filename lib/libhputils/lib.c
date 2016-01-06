@@ -82,10 +82,6 @@ void byte2hex(uint8_t byte, char *hex) {
 	}
 }
 
-uint8_t bcd2byte(uint8_t bcd) {
-	return 10 * ((bcd & 0xF0) >> 4) + (bcd & 0xF);
-}
-
 char* itoa(int val, char *str, int base) {
 	if (str == NULL || base < 2 || base > 36)
 		return NULL;

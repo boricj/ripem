@@ -1,0 +1,39 @@
+MEMORY
+{
+	dram : ORIGIN = 0x31000000, LENGTH = 16384K
+}
+
+PHDRS
+{
+	load PT_LOAD;
+}
+
+SECTIONS
+{
+	/* Relocator from DRAM to SRAM. */
+	.startup : ALIGN(8) {
+		*(.start*);
+	} >dram :load
+
+	.text : ALIGN(8) {
+		*(.text*);
+	} >dram :load
+
+	.data : ALIGN(8) {
+		*(.data*);
+	} >dram :load
+
+	.rodata : ALIGN(8) {
+		*(.rodata*);
+	} >dram :load
+
+	_bss_start = .;
+	.bss : ALIGN(8) {
+		*(.bss*);
+	} >dram :load
+	_bss_end = .;
+
+	.payload : ALIGN(2048) {
+		*(.payload*);
+	} >dram :load
+}

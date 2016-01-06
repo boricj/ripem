@@ -6,7 +6,7 @@
 #include "syscon.h"
 #include "rtc.h"
 
-#include "gdb_stub.h"
+#include "lib.h"
 
 const char *ripem_version = "0.0.1";
 
@@ -71,8 +71,6 @@ void launch_payload(unsigned r0, void *initial_stack) {
 }
 
 void main(unsigned r0, void *initial_stack) {
-	int sec, prev_sec;
-
 	led_init();
 	keypad_init();
 	serial_init(115200);
@@ -85,29 +83,6 @@ void main(unsigned r0, void *initial_stack) {
 	serial_puts(ripem_version);
 	serial_puts("\n\n");
 
-	/*
-	 * Align ourselves on the next second, then wait for one second.
-	 * If the ON key is kept pressed during all that time, run the GDB stub.
-	 * Otherwise, run the payload.
-	 */
-	for (int delay = 0; delay < 2; delay++) {
-		rtc_get_time(NULL, NULL, NULL, NULL, NULL, &sec);
-		prev_sec = sec;
-
-		/*
-		 * XXX : abuse the RTC for sleeping for about a second.
-		 */
-		do {
-			rtc_get_time(NULL, NULL, NULL, NULL, NULL, &sec);
-			if (keypad_get(KEY_ON) == 0)
-				goto launch_payload;
-		} while (prev_sec == sec);
-	}
-
-	serial_puts("Launching GDB stub...\n");
-	gdb_mainloop(r0, initial_stack);
-
-launch_payload:
 	serial_puts("Loading payload...\n");
 	launch_payload(r0, initial_stack);
 

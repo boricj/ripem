@@ -1,7 +1,10 @@
 #include "rtc.h"
 
 #include "defs.h"
-#include "lib.h"
+
+uint8_t bcd2byte(uint8_t bcd) {
+	return 10 * ((bcd & 0xF0) >> 4) + (bcd & 0xF);
+}
 
 void rtc_init(void) {
 	return;

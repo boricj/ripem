@@ -1,0 +1,28 @@
+RIPEM_DIR = bin/ripem
+
+RIPEM_ROM = $(RIPEM_DIR)/ripem.rom
+RIPEM_ELF = $(RIPEM_DIR)/ripem.elf
+RIPEM_SRC = $(call LIST_SRCS,$(RIPEM_DIR))
+RIPEM_OBJ = $(call SUBST_OBJ,$(RIPEM_SRC),$(RIPEM_DIR))
+RIPEM_PAYLOAD_OBJ = $(RIPEM_DIR)/ripem_payload.o
+
+$(RIPEM_ROM): $(RIPEM_ELF) $(ELF2OSROM)
+	$(ELF2OSROM) $< $@
+
+$(RIPEM_ELF): $(RIPEM_OBJ) $(RIPEM_PAYLOAD_OBJ) $(LIBHPBSP) $(LIBHPUTILS)
+	$(ARM_LD) $(ARM_LDFLAGS) -T bin/ripem/ldscript $^ -lgcc -o $@ --entry 0x30000020
+
+$(RIPEM_DIR)/%.o: $(RIPEM_DIR)/%.c
+	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
+
+$(RIPEM_DIR)/%.o: $(RIPEM_DIR)/%.S
+	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
+
+BUILD_FILES += $(RIPEM_ROM)
+CLEAN_FILES += $(RIPEM_DIR)/*.elf $(RIPEM_DIR)/*.o $(RIPEM_DIR)/*.rom
+
+$(RIPEM_PAYLOAD_OBJ): $(RIPEM_PAYLOAD)
+	@cp -f $(RIPEM_PAYLOAD) payload
+	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload payload ripem_payload.o
+	@rm payload
+	@mv -f ripem_payload.o $(RIPEM_PAYLOAD_OBJ)

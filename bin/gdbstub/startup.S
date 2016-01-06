@@ -8,20 +8,6 @@
 
 _entry:
 #
-# Make BXCBOOT0.BIN read-only. Just in case.
-#
-	ldr r1,=0x4E000000
-# Make sure at least the first 128 sectors (=256 KiB) are protected.
-	ldr r2, [r1, #0x20]
-	cmp r2, #0x80
-	movlo r2, #0x80
-	str r2, [r1, #0x20]
-# Turn on software-proof write protection.
-	ldr r2, [r1, #0x4]
-	orr r2, #0x20000
-	str r2, [r1, #0x4]
-
-#
 # Relocate from DRAM to SRAM
 #
 	ldr r2, =0x2000
@@ -49,7 +35,7 @@ _clear_bss_loop:
 	blo _clear_bss_loop
 
 	mov r1, sp
-	ldr r2, =main
+	ldr r2, =gdb_mainloop
 	ldr lr, =0
 	ldr sp, =0xFFFC
 	mov pc, r2

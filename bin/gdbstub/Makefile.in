@@ -1,0 +1,17 @@
+GDBSTUB_DIR = bin/gdbstub
+
+GDBSTUB_ELF = $(GDBSTUB_DIR)/gdbstub.elf
+GDBSTUB_SRC = $(call LIST_SRCS,$(GDBSTUB_DIR))
+GDBSTUB_OBJ = $(call SUBST_OBJ,$(GDBSTUB_SRC),$(GDBSTUB_DIR))
+
+$(GDBSTUB_ELF): $(GDBSTUB_OBJ) $(LIBHPBSP) $(LIBHPUTILS)
+	$(ARM_LD) $(ARM_LDFLAGS) -T bin/gdbstub/ldscript $^ -lgcc -o $@ --entry 0x30000000
+
+$(GDBSTUB_DIR)/%.o: $(GDBSTUB_DIR)/%.c
+	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
+
+$(GDBSTUB_DIR)/%.o: $(GDBSTUB_DIR)/%.S
+	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
+
+BUILD_FILES += $(GDBSTUB_ELF)
+CLEAN_FILES += $(GDBSTUB_DIR)/*.elf $(GDBSTUB_DIR)/*.o
