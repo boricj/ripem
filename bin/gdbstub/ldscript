@@ -1,8 +1,6 @@
 MEMORY
 {
 	sram : ORIGIN = 0x00002000, LENGTH = 57344
-	dram_startup : ORIGIN = 0x30000020, LENGTH = 8160
-	dram : ORIGIN = 0x30002000, LENGTH = 33546240
 }
 
 PHDRS
@@ -15,31 +13,21 @@ SECTIONS
 	/* Relocator from DRAM to SRAM. */
 	.startup : ALIGN(8) {
 		*(.start*);
-	} >dram_startup :load
+	} >sram :load
 
 	.text : ALIGN(8) {
-		_rel_start = .;
-
 		*(.text*);
-	} >sram AT>dram :load
+	} >sram :load
 
 	.data : ALIGN(8) {
 		*(.data*);
-	} >sram AT>dram :load
+	} >sram :load
 
 	.rodata : ALIGN(8) {
 		*(.rodata*);
+	} >sram :load
 
-		_rel_end = .;
-	} >sram AT>dram :load
-
-	_bss_start = .;
 	.bss : ALIGN(8) {
 		*(.bss*);
 	} >sram :load
-	_bss_end = .;
-
-	.payload : ALIGN(2048) {
-		*(.payload*);
-	} >dram :load
 }

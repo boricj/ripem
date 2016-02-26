@@ -10,8 +10,6 @@
 
 const char *ripem_version = "0.0.1";
 
-#define PAYLOAD_STAGING_AREA 0x31000000
-
 extern uint32_t _binary_payload_start;
 extern uint32_t _binary_payload_size;
 
@@ -35,15 +33,8 @@ void launch_payload(unsigned r0, void *initial_stack) {
 	serial_puts(itoa((uint32_t)initial_stack, buffer, 16));
 	serial_putc('\n');
 
-	serial_puts("Payload staging area : 0x");
-	serial_puts(itoa(PAYLOAD_STAGING_AREA, buffer, 16));
-	serial_putc('\n');
-
-	/* Move payload out of the way. */
-	memcpy((char*)PAYLOAD_STAGING_AREA, payload_ptr, payload_size);
-
 	/* Load payload. */
-	switch (load_elf((char*)PAYLOAD_STAGING_AREA, &entry)) {
+	switch (load_elf(payload_ptr, &entry)) {
 	case ELF_OK:
 		serial_puts("Payload entry : 0x");
 		serial_puts(itoa(entry, buffer, 16));

@@ -1,14 +1,8 @@
-#include "led.h"
+#include "lcd.h"
 
 #include <stdint.h>
 
 #include "defs.h"
-
-typedef enum {
-	VIDMODE_DISABLED,
-	VIDMODE_R5G6B5,
-	VIDMODE_R8G8B8
-} vidmode_t;
 
 void lcd_init(void)
 {
@@ -29,6 +23,11 @@ void lcd_set_backlight(int status)
 void lcd_set_mode(vidmode_t mode)
 {
 	switch (mode) {
+	case VIDMODE_P1:
+		*WINCON0 = (*WINCON0 & 0xFFFFFFC3) | 0x0;
+		*VIDCON0 = (*VIDCON0 & 0xFFFFFFFC) | 0x3;
+		*WPALCON = 0x1;
+		break;
 	case VIDMODE_R5G6B5:
 		*WINCON0 = (*WINCON0 & 0xFFFFFFC3) | 0x14;
 		*VIDCON0 = (*VIDCON0 & 0xFFFFFFFC) | 0x3;
@@ -62,4 +61,19 @@ void lcd_set_buffers(void *buffer0, void *buffer1)
 {
 	*VIDW00ADD0B0 = (uint32_t)buffer0;
 	*VIDW00ADD0B1 = (uint32_t)buffer1;
+}
+
+void lcd_set_palette(void *pal, int size)
+{
+	uint32_t pal_data = (uint32_t)pal;
+
+	*WPALCON = 0x11;
+
+	/* Write palette address. */
+	for (int i = 0; i < size; i++) {
+		*((WPALCON)+i) = (uint32_t)pal_data;
+		pal_data += 4;
+	}
+
+	*WPALCON = 0x1;
 }

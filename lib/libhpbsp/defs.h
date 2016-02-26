@@ -8,11 +8,13 @@
 #define SWRST     (volatile uint32_t*)0x4C000044
 
 /* LCD */
-#define VIDCON0      (volatile uint32_t*)0x4C800000
-#define VIDCON1      (volatile uint32_t*)0x4C800004
-#define WINCON0      (volatile uint32_t*)0x4C800014
-#define VIDW00ADD0B0 (volatile uint32_t*)0x4C800064
-#define VIDW00ADD0B1 (volatile uint32_t*)0x4C800068
+#define VIDCON0        (volatile uint32_t*)0x4C800000
+#define VIDCON1        (volatile uint32_t*)0x4C800004
+#define WINCON0        (volatile uint32_t*)0x4C800014
+#define VIDW00ADD0B0   (volatile uint32_t*)0x4C800064
+#define VIDW00ADD0B1   (volatile uint32_t*)0x4C800068
+#define WPALCON        (volatile uint32_t*)0x4C8000E4
+#define WIN0_PALENTRY0 (volatile uint32_t*)0x4C800400
 
 /* UART0 */
 #define ULCON0    (volatile uint32_t*)0x50000000

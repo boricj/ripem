@@ -22,9 +22,7 @@ elf_err load_elf(void *elf_data, uint32_t *entry) {
 	Elf32_Phdr *phdr = (Elf32_Phdr *) ((char*)elf_data + ehdr->e_phoff);
 
 	/* Check that the payload program header is sane. */
-	if ((phdr->p_type != PT_LOAD) ||
-	    (phdr->p_paddr < 0x30000000) ||
-	    (phdr->p_paddr >= 0x32000000))
+	if (phdr->p_type != PT_LOAD)
 		return ELF_ERR_INVALID_PROGRAM_HEADER;
 
 	/* Load the payload. */

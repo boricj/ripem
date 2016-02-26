@@ -6,6 +6,8 @@
 #include "serial.h"
 #include "syscon.h"
 
+#include "drawing.h"
+
 uint32_t gdb_regs[16];
 
 void gdb_read_hex(void *addr, char *buffer, int len) {
@@ -158,16 +160,20 @@ void gdb_command_write_registers(char *in, int inLen, char *out, int *outLen) {
 }
 
 int gdb_read_packet(char *in) {
-	int cpt = 0, ok_released = 0;
+	int cpt = 0, ok_released = 0, ok_pressed = 0;
 	uint8_t chksum = 0;
 
 	while (1) {
 		int c;
 		while ((c = serial_getc()) == -1) {
+			keypad_scan();
+
+			/* Reboot if the ON key is pressed. */
 			if (keypad_get(KEY_ON) == 0)
 				ok_released = 1;
-
-			if (keypad_get(KEY_ON) && ok_released)
+			if ((keypad_get(KEY_ON) == 1) && ok_released)
+				ok_pressed = 1;
+			if ((keypad_get(KEY_ON) == 0) && ok_pressed)
 				syscon_reset();
 		}
 
@@ -220,7 +226,36 @@ void gdb_write_packet(char *out, int len) {
 	serial_putc(hexsum[1]);
 }
 
-void gdb_mainloop(uint32_t r0, void *initial_stack) {
+void gdb_splashscreen(void)
+{
+	const char *str_gdb_stub = "GDB Stub";
+	const char *str_gdb_type = "(serial)";
+	const char *str_msg = "Press ON to reboot";
+
+	static uint8_t* vidbuffer = (uint8_t*)0x31800000;
+
+	memset(vidbuffer, 0xFF, 320*240*4);
+	font_draw_text_r8g8b8(str_gdb_stub, (320 - (strlen(str_gdb_stub)*9)) / 2, 80, vidbuffer, 0, 0xFFFFFF);
+	font_draw_text_r8g8b8(str_gdb_type, (320 - (strlen(str_gdb_type)*9)) / 2, 96, vidbuffer, 0, 0xFFFFFF);
+	font_draw_text_r8g8b8(str_msg, (320 - (strlen(str_msg)*9)) / 2, 176, vidbuffer, 0, 0xFFFFFF);
+
+	lcd_set_buffers(vidbuffer, 0);
+	lcd_set_active_buffer(0);
+	lcd_set_mode(VIDMODE_R8G8B8);
+
+	lcd_set_backlight(1);
+}
+
+void gdb_mainloop(uint32_t r0, void *initial_stack)
+{
+	serial_init(115200);
+	led_init();
+	lcd_init();
+	keypad_init();
+
+	serial_puts("Launching GDB stub...\n");
+	gdb_splashscreen();
+
 	char in[GDB_PACKET_BUFFER_LEN], out[GDB_PACKET_BUFFER_LEN];
 	int len, outLen;
 

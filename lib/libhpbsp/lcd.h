@@ -3,6 +3,7 @@
 
 typedef enum {
 	VIDMODE_DISABLED,
+	VIDMODE_P1,
 	VIDMODE_R5G6B5,
 	VIDMODE_R8G8B8
 } vidmode_t;
@@ -18,5 +19,7 @@ int lcd_get_active_buffer(void);
 void lcd_set_active_buffer(int buffer);
 
 void lcd_set_buffers(void *buffer0, void *buffer1);
+
+void lcd_set_palette(void *pal, int size);
 
 #endif

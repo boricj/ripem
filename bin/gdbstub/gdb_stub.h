@@ -23,6 +23,8 @@ void gdb_command_continue(char *in, int inLen, char *out, int *outLen);
 int gdb_read_packet(char *in);
 void gdb_write_packet(char *out, int len);
 
+void gdb_splashscreen(void);
+
 void gdb_mainloop(uint32_t r0, void *initial_stack);
 
 #endif

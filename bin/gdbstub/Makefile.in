@@ -5,7 +5,7 @@ GDBSTUB_SRC = $(call LIST_SRCS,$(GDBSTUB_DIR))
 GDBSTUB_OBJ = $(call SUBST_OBJ,$(GDBSTUB_SRC),$(GDBSTUB_DIR))
 
 $(GDBSTUB_ELF): $(GDBSTUB_OBJ) $(LIBHPBSP) $(LIBHPUTILS)
-	$(ARM_LD) $(ARM_LDFLAGS) -T bin/gdbstub/ldscript $^ -lgcc -o $@ --entry 0x30000000
+	$(ARM_LD) $(ARM_LDFLAGS) -T bin/gdbstub/ldscript $^ -lgcc -o $@ --entry 0x00002000
 
 $(GDBSTUB_DIR)/%.o: $(GDBSTUB_DIR)/%.c
 	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
