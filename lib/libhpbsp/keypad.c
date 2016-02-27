@@ -6,17 +6,18 @@
 
 static uint8_t key_status[KEY_LAST];
 
+/* KEY_ON is hard-wired, it doesn't require scanning to read its value. */
 static const key_id key_gpio[8][8] =
 {
-	{ KEY_ON,   KEY_P,           KEY_DEL,   KEY_M,     KEY_NUM,  KEY_S,     KEY_O,    KEY_ENTER } ,
-	{ KEY_NONE, KEY_QUOTE,       KEY_D,     KEY_L,     KEY_PLOT, KEY_CAS,   KEY_R,    KEY_RIGHT } ,
-	{ KEY_NONE, KEY_T,           KEY_C,     KEY_K,     KEY_SYMB, KEY_MENU,  KEY_Q,    KEY_NONE  } ,
-	{ KEY_NONE, KEY_X,           KEY_ALPHA, KEY_J,     KEY_HOME, KEY_VIEW,  KEY_W,    KEY_NONE  } ,
+	{ KEY_ON, KEY_P,           KEY_DEL,   KEY_M,     KEY_NUM,  KEY_S,     KEY_O,    KEY_ENTER } ,
+	{ KEY_ON, KEY_QUOTE,       KEY_D,     KEY_L,     KEY_PLOT, KEY_CAS,   KEY_R,    KEY_RIGHT } ,
+	{ KEY_ON, KEY_T,           KEY_C,     KEY_K,     KEY_SYMB, KEY_MENU,  KEY_Q,    KEY_NONE  } ,
+	{ KEY_ON, KEY_X,           KEY_ALPHA, KEY_J,     KEY_HOME, KEY_VIEW,  KEY_W,    KEY_NONE  } ,
 
-	{ KEY_NONE, KEY_COLON,       KEY_E,     KEY_I,     KEY_APPS, KEY_UP,    KEY_V,    KEY_NONE } ,
-	{ KEY_NONE, KEY_SEMICOLON,   KEY_A,     KEY_H,     KEY_DOWN, KEY_Y,     KEY_U,    KEY_NONE } ,
-	{ KEY_NONE, KEY_UNDERSCORE,  KEY_G,     KEY_SHIFT, KEY_ESC,  KEY_EQUAL, KEY_HASH, KEY_NONE } ,
-	{ KEY_NONE, KEY_LEFT,        KEY_B,     KEY_F,     KEY_N,    KEY_HELP,  KEY_Z,    KEY_NONE }
+	{ KEY_ON, KEY_COLON,       KEY_E,     KEY_I,     KEY_APPS, KEY_UP,    KEY_V,    KEY_NONE } ,
+	{ KEY_ON, KEY_SEMICOLON,   KEY_A,     KEY_H,     KEY_DOWN, KEY_Y,     KEY_U,    KEY_NONE } ,
+	{ KEY_ON, KEY_UNDERSCORE,  KEY_G,     KEY_SHIFT, KEY_ESC,  KEY_EQUAL, KEY_HASH, KEY_NONE } ,
+	{ KEY_ON, KEY_LEFT,        KEY_B,     KEY_F,     KEY_N,    KEY_HELP,  KEY_Z,    KEY_NONE }
 } ;
 
 void keypad_init(void)
