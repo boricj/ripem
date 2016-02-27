@@ -7,10 +7,10 @@ ARM_LDFLAGS = -nostdlib -ffreestanding -s -n
 CROSS_COMPILER_TRIPLET = arm-none-eabi
 
 #
-# >>> Select your payload here <<<
+# >>> Put your payloads here <<<
 #
-RIPEM_PAYLOAD = bin/dummy/dummy.elf
-#RIPEM_PAYLOAD = prime_os.elf
+RIPEM_PAYLOAD = bin/dummy/dummy.elf bin/gdbstub/gdbstub_serial.elf
+#RIPEM_PAYLOAD += prime_os.elf
 
 #-------------------------------------------------------------------------------
 
@@ -42,4 +42,8 @@ clean:
 	@for i in $(CLEAN_FILES) ; do \
 		echo rm -f $$i ; \
 		rm -f $$i ; \
+	done
+	@for i in $(CLEAN_DIRS) ; do \
+		echo rm -rf $$i ; \
+		rm -rf $$i ; \
 	done

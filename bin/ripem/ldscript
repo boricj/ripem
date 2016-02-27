@@ -27,14 +27,14 @@ SECTIONS
 		*(.rodata*);
 	} >dram :load
 
-	.payload : ALIGN(8) {
-		*(.payload*);
-	} >dram :load
-
-		_bss_start = .;
+	_bss_start = .;
 	.bss : ALIGN(8) {
 		*(.bss*);
 	} >dram :load
 	_bss_end = .;
+
+	.payload : ALIGN(2048) {
+		*(.payload*);
+	} >dram :load
 
 }

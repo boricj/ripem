@@ -1,5 +1,20 @@
 #include "lib.h"
 
+int memcmp(const void *p1, const void *p2, unsigned n) {
+	const uint8_t *u8_p1 = p1;
+	const uint8_t *u8_p2 = p2;
+
+	while (n--) {
+		if (*u8_p1 != *u8_p2)
+			return *u8_p1 - *u8_p2;
+
+		u8_p1++;
+		u8_p2++;
+	}
+
+	return 0;
+}
+
 void* memcpy(void *dst, const void *src, unsigned n) {
 	uint8_t *u8_dst = dst;
 	const uint8_t *u8_src = src;
@@ -29,6 +44,24 @@ char* strcat(char *dst, const char *src)
 	while ((*dst++ = *src++));
 
 	return dst_copy;
+}
+
+int strcmp(const char *str1, const char *str2) {
+	while (*str1 != 0 && *str2 != 0) {
+		if (*str1 != *str2)
+			return *str1 - *str2;
+
+		str1++;
+		str2++;
+	}
+
+	return 0;
+}
+
+char* strcpy(char *dst, const char *src) {
+	while ((*dst++ = *src++));
+
+	return dst;
 }
 
 int strlen(const char *str)

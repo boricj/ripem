@@ -1,6 +1,6 @@
 GDBSTUB_DIR = bin/gdbstub
 
-GDBSTUB_ELF = $(GDBSTUB_DIR)/gdbstub.elf
+GDBSTUB_ELF = $(GDBSTUB_DIR)/gdbstub_serial.elf
 GDBSTUB_SRC = $(call LIST_SRCS,$(GDBSTUB_DIR))
 GDBSTUB_OBJ = $(call SUBST_OBJ,$(GDBSTUB_SRC),$(GDBSTUB_DIR))
 

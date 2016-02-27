@@ -19,10 +19,13 @@ $(RIPEM_DIR)/%.o: $(RIPEM_DIR)/%.S
 	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
 
 BUILD_FILES += $(RIPEM_ROM)
-CLEAN_FILES += $(RIPEM_DIR)/*.elf $(RIPEM_DIR)/*.o $(RIPEM_DIR)/*.rom
+CLEAN_FILES += $(RIPEM_DIR)/*.elf $(RIPEM_DIR)/*.o $(RIPEM_DIR)/*.rom $(RIPEM_DIR)/payload.cpio
+CLEAN_DIRS += $(RIPEM_DIR)/tmp
 
 $(RIPEM_PAYLOAD_OBJ): $(RIPEM_PAYLOAD)
-	@cp -f $(RIPEM_PAYLOAD) payload
-	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload payload ripem_payload.o
-	@rm payload
-	@mv -f ripem_payload.o $(RIPEM_PAYLOAD_OBJ)
+	rm -rf $(RIPEM_DIR)/tmp
+	rm -f $(RIPEM_DIR)/payload
+	mkdir $(RIPEM_DIR)/tmp
+	cp -f $(RIPEM_PAYLOAD) $(RIPEM_DIR)/tmp
+	cd $(RIPEM_DIR)/tmp && ls | cpio -ov -H newc > ../payload.cpio
+	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload $(RIPEM_DIR)/payload.cpio $(RIPEM_PAYLOAD_OBJ)

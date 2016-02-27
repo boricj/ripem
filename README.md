@@ -20,23 +20,11 @@ Everything else : you are on your own.
 
 ## How to use
 
-### Launching the GDB stub
-To boot the GDB stub :
- * Cold-boot the calculator ;
- * Keep the `ON` key pressed for about 2 seconds until the blue LED lights up.
+A graphical menu is shown to select a payload to run.
 
-The GDB stub implements only the bare minimum required to poke around the memory of the calculator and to upload/execute code through it. When busy with a request, the stub will light up the red LED.
-
-To reset the calculator when the stub isn't busy, press the `ON` key.
-
-### Launching the payload
-To boot the payload :
- * Cold-boot the calculator ;
- * Immediately release the `ON` key.
-
-A dummy payload is provided by default to cycle the LEDs and show the current time on the screen. To reset the calculator, press the `ON` key.
-
-The official `PRIME_OS.ROM` can also be launched as a payload, provided one uses the truncating ability of `osrom2elf` to make it fit.
+These payloads are currently available :
+* dummy.elf : a dumb payload to showcase functionality ;
+* gdbstub_serial.elf : a bare-bones GDB stub over the UART.
 
 # License
 Haven't picked one yet. Should somebody else tries to contribute to this, a `LICENSE` file will appear in the repository, possibly with the BSD license text inside.
