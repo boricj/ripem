@@ -161,7 +161,7 @@ err0:
 /*
  * Convert an OSROM file to ELF.
  */
-int osrom2elf(char *inPath, char *outPath, int size) {
+int osrom2elf(char *inPath, char *outPath) {
 	int status = -1;
 
 	/* Open OSROM for reading. */
@@ -206,9 +206,9 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 
 	elf_Data->d_align = 0;
 	elf_Data->d_off = 0;
-	elf_Data->d_buf = osrom + OSROM_DATA_OFFSET;
+	elf_Data->d_buf = osrom;
 	elf_Data->d_type = ELF_T_BYTE;
-	elf_Data->d_size = size;
+	elf_Data->d_size = OSROM_SIZE;
 	elf_Data->d_version = 1;
 
 	LIBELF_CHECK(inPath, elf_ShdrData = elf32_getshdr(elf_Scn), err2);
@@ -245,8 +245,8 @@ int osrom2elf(char *inPath, char *outPath, int size) {
 	elf_Phdr->p_type = PT_LOAD;
 	elf_Phdr->p_flags = PF_R | PF_W | PF_X;
 	elf_Phdr->p_offset = elf_ShdrData->sh_offset;
-	elf_Phdr->p_vaddr = osrom_Hdr->e_loadaddr + 0x20;
-	elf_Phdr->p_paddr = osrom_Hdr->e_loadaddr + 0x20;
+	elf_Phdr->p_vaddr = osrom_Hdr->e_loadaddr;
+	elf_Phdr->p_paddr = osrom_Hdr->e_loadaddr;
 	elf_Phdr->p_filesz = elf_Data->d_size;
 	elf_Phdr->p_memsz = elf_Data->d_size;
 
@@ -284,15 +284,13 @@ conv_mode get_conv_mode(char *argv0, char **base_name) {
 		*base_name = "osrom2elf";
 	}
 
-        free(dup);
-        return mode;
+	free(dup);
+	return mode;
 }
 
 int main(int argc, char *argv[]) {
 	int status = 1;
 	char *basename;
-	int size = OSROM_DATA_SIZE;
-
 	conv_mode mode = get_conv_mode(argv[0], &basename);
 
 	if (elf_version(1) == EV_NONE) {
@@ -311,17 +309,12 @@ int main(int argc, char *argv[]) {
 		break;
 
 	case CONV_OSROM2ELF:
-		if (argc == 4) {
-			if (sscanf(argv[3], "%i", &size) != 1)
-				size = -1;
-		}
-
-		if (argc < 2 || argc > 4 || size < 0 || size > OSROM_DATA_SIZE) {
-			fprintf(stderr, "usage: %s in out [truncate_size]\n", basename);
+		if (argc != 3) {
+			fprintf(stderr, "usage: %s in out\n", basename);
 			goto err0;
 		}
 
-		status = osrom2elf(argv[1], argv[2], size) < 0 ? 1 : 0;
+		status = osrom2elf(argv[1], argv[2]) < 0 ? 1 : 0;
 		break;
 
 	default:
