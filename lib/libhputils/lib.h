@@ -22,6 +22,6 @@ void byte2hex(uint8_t byte, char *hex);
 
 char* itoa(int val, char *str, int base);
 
-static const char * const ripem_version = "0.0.1";
+static const char * const ripem_version = "0.1.0";
 
 #endif
