@@ -101,11 +101,8 @@ builtin:
 	return i;
 }
 
-void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack)
+void init_screen()
 {
-	int selection = 0;
-	char *screen;
-
 	char *screen0 = (char*)FRAMEBUF0, *screen1 = (char*)FRAMEBUF1;
 	memset(screen0, 0xFF, 320*240*4);
 	memset(screen1, 0xFF, 320*240*4);
@@ -114,6 +111,35 @@ void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack
 	lcd_set_buffers(screen0, screen1);
 	lcd_set_mode(VIDMODE_R8G8B8);
 	lcd_set_backlight(1);
+}
+
+void draw_banner(char *screen)
+{
+	/* Draw banner. */
+	char buf[32];
+	buf[0] = '\0';
+	strcat(buf, "Rip'Em v");
+	strcat(buf, ripem_version);
+	memset(screen, 0xFF, 320*4*31);
+	memset(screen+320*4*31, 0, 320*4);
+	font_draw_text_r8g8b8(buf, (320 - (strlen(buf)*9)) / 2, 8, screen, 0x0, 0xFFFFFF);
+}
+
+void draw_splashscreen()
+{
+	const char *msg = "Uncompressing payloads...";
+	char *screen0 = (char*)FRAMEBUF0;
+
+	draw_banner(screen0);
+	font_draw_text_r8g8b8(msg, (320 - (strlen(msg)*9)) / 2, 112, screen0, 0x0, 0xFFFFFF);
+}
+
+void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack)
+{
+	int selection = 0;
+	char *screen;
+
+	char *screen0 = (char*)FRAMEBUF0, *screen1 = (char*)FRAMEBUF1;
 
 	while (1) {
 		/* Use double buffer for flicker-free operation. */
@@ -123,15 +149,7 @@ void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack
 			screen = screen0;
 
 		memset(screen, 0xFF, 320*240*4);
-
-		/* Draw banner. */
-		char buf[32];
-		buf[0] = '\0';
-		strcat(buf, "Rip'Em v");
-		strcat(buf, ripem_version);
-		memset(screen, 0xFF, 320*4*31);
-		memset(screen+320*4*31, 0, 320*4);
-		font_draw_text_r8g8b8(buf, (320 - (strlen(buf)*9)) / 2, 8, screen, 0x0, 0xFFFFFF);
+		draw_banner(screen);
 
 		/* Draw menu. */
 		for (int i = 0; i < nb; i++) {

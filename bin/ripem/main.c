@@ -22,6 +22,9 @@ void main(unsigned r0, void *initial_stack) {
 	serial_puts(ripem_version);
 	serial_puts("\n\n");
 
+	init_screen();
+	draw_splashscreen();
+
 	payload_item items[13];
 	int nb_payloads;
 
