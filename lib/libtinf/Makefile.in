@@ -1,0 +1,18 @@
+LIBTINF_DIR = lib/libtinf
+
+LIBTINF     = $(LIBTINF_DIR)/libtinf.a
+LIBTINF_SRC = $(call LIST_SRCS,$(LIBTINF_DIR))
+LIBTINF_OBJ = $(call SUBST_OBJ,$(LIBTINF_SRC),$(LIBTINF_DIR))
+
+$(LIBTINF): $(LIBTINF_OBJ)
+	$(ARM_AR) rcs $@ $^
+
+$(LIBTINF_DIR)/%.o: $(LIBTINF_DIR)/%.c
+	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
+
+$(LIBTINF_DIR)/%.o: $(LIBTINF_DIR)/%.S
+	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
+
+ARM_CFLAGS += -I$(LIBTINF_DIR)
+BUILD_FILES += $(LIBTINF)
+CLEAN_FILES += $(LIBTINF_DIR)/*.a $(LIBTINF_DIR)/*.o

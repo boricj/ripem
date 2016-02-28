@@ -9,7 +9,7 @@ RIPEM_PAYLOAD_OBJ = $(RIPEM_DIR)/ripem_payload.o
 $(RIPEM_ROM): $(RIPEM_ELF) $(ELF2OSROM)
 	$(ELF2OSROM) $< $@
 
-$(RIPEM_ELF): $(RIPEM_OBJ) $(RIPEM_PAYLOAD_OBJ) $(LIBHPBSP) $(LIBHPUTILS)
+$(RIPEM_ELF): $(RIPEM_OBJ) $(RIPEM_PAYLOAD_OBJ) $(LIBHPBSP) $(LIBHPUTILS) $(LIBTINF)
 	$(ARM_LD) $(ARM_LDFLAGS) -T bin/ripem/ldscript $^ -lgcc -o $@ --entry 0x31000020
 
 $(RIPEM_DIR)/%.o: $(RIPEM_DIR)/%.c
@@ -19,7 +19,7 @@ $(RIPEM_DIR)/%.o: $(RIPEM_DIR)/%.S
 	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
 
 BUILD_FILES += $(RIPEM_ROM)
-CLEAN_FILES += $(RIPEM_DIR)/*.elf $(RIPEM_DIR)/*.o $(RIPEM_DIR)/*.rom $(RIPEM_DIR)/payload.cpio
+CLEAN_FILES += $(RIPEM_DIR)/*.elf $(RIPEM_DIR)/*.o $(RIPEM_DIR)/*.rom $(RIPEM_DIR)/payload.cpio.gz
 CLEAN_DIRS += $(RIPEM_DIR)/tmp
 
 $(RIPEM_PAYLOAD_OBJ): $(RIPEM_PAYLOAD)
@@ -27,5 +27,5 @@ $(RIPEM_PAYLOAD_OBJ): $(RIPEM_PAYLOAD)
 	rm -f $(RIPEM_DIR)/payload
 	mkdir $(RIPEM_DIR)/tmp
 	cp -f $(RIPEM_PAYLOAD) $(RIPEM_DIR)/tmp
-	cd $(RIPEM_DIR)/tmp && ls | cpio -ov -H newc > ../payload.cpio
-	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload $(RIPEM_DIR)/payload.cpio $(RIPEM_PAYLOAD_OBJ)
+	cd $(RIPEM_DIR)/tmp && ls | cpio -ov -H newc | gzip -9 > ../payload.cpio.gz
+	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload $(RIPEM_DIR)/payload.cpio.gz $(RIPEM_PAYLOAD_OBJ)

@@ -8,14 +8,43 @@
 #include "lib.h"
 #include "serial.h"
 #include "syscon.h"
+#include "tinf.h"
 
-extern uint32_t _binary_bin_ripem_payload_cpio_start;
+extern uint32_t _binary_bin_ripem_payload_cpio_gz_start;
+extern uint32_t _binary_bin_ripem_payload_cpio_gz_end;
+
+/*
+ * Memory map :
+ * 0x30000000 - 0x31000000 : free (for payload loading, 16 MiB)
+ * 0x31000000 - 0x31100000 : Rip'Em (PRIME_OS.ROM)
+ * 0x31100000 - 0x31196000 : framebuffers
+ * 0x31196000 - 0x32000000 : free (for decompressing CPIO archive) and stack
+ */
+
+#define FRAMEBUF0  0x31100000
+#define FRAMEBUF1  0x3114B000
+#define CPIOTARGET 0x31196000
 
 int parse_payloads(payload_item *items)
 {
-	struct cpio_newc_header *hdr = (struct cpio_newc_header *)&_binary_bin_ripem_payload_cpio_start;
-	int i;
+	struct cpio_newc_header *hdr = (struct cpio_newc_header *)CPIOTARGET;
+	int i = 0;
+	unsigned destlen = 0;
 	char buf[9];
+
+	/* Decompress CPIO file. */
+	tinf_init();
+	int r = tinf_gzip_uncompress((void*)CPIOTARGET, &destlen,
+	                             &_binary_bin_ripem_payload_cpio_gz_start,
+	                             (int)&_binary_bin_ripem_payload_cpio_gz_end - (int)&_binary_bin_ripem_payload_cpio_gz_start);
+	if (r != TINF_OK) {
+		serial_puts("Error when decompressing CPIO archive.\n");
+		goto builtin;
+	}
+
+	serial_puts("Decompressed ");
+	serial_puts(itoa((uint32_t)destlen, buf, 10));
+	serial_puts(" bytes for CPIO archive.\n");
 
 	/* Space on screen for 13 items, one is reserved. */
 	for (i = 0; i < 12; i++) {
@@ -64,6 +93,7 @@ int parse_payloads(payload_item *items)
 			hdr = (struct cpio_newc_header *)(((char*)hdr) + (4 - (filesize % 4)));
 	}
 
+builtin:
 	/* Add reboot option. */
 	strcpy(items[i].name, "Reboot");
 	items[i++].location = 0;
@@ -76,7 +106,7 @@ void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack
 	int selection = 0;
 	char *screen;
 
-	char *screen0 = (char*)0x31100000, *screen1 = (char*)0x3114B000;
+	char *screen0 = (char*)FRAMEBUF0, *screen1 = (char*)FRAMEBUF1;
 	memset(screen0, 0xFF, 320*240*4);
 	memset(screen1, 0xFF, 320*240*4);
 
