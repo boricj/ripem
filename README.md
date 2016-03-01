@@ -13,7 +13,7 @@ Everything else : you are on your own.
 
 ## How to install
 Using the HP Connectivity Kit :
- * Replace `PRIME_OS.ROM` with the file `ripem/ripem.rom` generated when building Rip'Em ;
+ * Replace `PRIME_OS.ROM` with the file `bin/ripem/PRIME_OS.ROM` generated when building Rip'Em ;
  * Flash the new firmware.
 
 Everything else : you are on your own.
@@ -24,7 +24,7 @@ A graphical menu is shown to select a payload to run.
 
 These payloads are currently available :
 * dumbcalc.elf : a dumb integer RPN calculator, as a concrete demo ;
-* dummy.elf : a dumb payload to showcase functionality ;
+* dummy.elf : a dummy payload to showcase functionality ;
 * gdbstub_serial.elf : a bare-bones GDB stub over the UART.
 
 # License

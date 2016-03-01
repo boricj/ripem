@@ -1,6 +1,6 @@
 *.a
 *.elf
 *.o
-*.rom
+*.ROM
 *.cpio.gz
 

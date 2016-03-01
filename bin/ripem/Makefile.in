@@ -1,6 +1,6 @@
 RIPEM_DIR = bin/ripem
 
-RIPEM_ROM = $(RIPEM_DIR)/ripem.rom
+RIPEM_ROM = $(RIPEM_DIR)/PRIME_OS.ROM
 RIPEM_ELF = $(RIPEM_DIR)/ripem.elf
 RIPEM_SRC = $(call LIST_SRCS,$(RIPEM_DIR))
 RIPEM_OBJ = $(call SUBST_OBJ,$(RIPEM_SRC),$(RIPEM_DIR))
