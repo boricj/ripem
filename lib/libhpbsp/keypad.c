@@ -49,7 +49,10 @@ void keypad_scan(void)
 
 int keypad_get(key_id key)
 {
-	return key_status[key];
+	if (key > KEY_NONE && key < KEY_LAST)
+		return key_status[key];
+
+	return 0;
 }
 
 const char* keypad_get_name(key_id key)

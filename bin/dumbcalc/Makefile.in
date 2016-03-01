@@ -1,0 +1,16 @@
+DUMBCALC_DIR = bin/dumbcalc
+
+DUMBCALC_ELF = $(DUMBCALC_DIR)/dumbcalc.elf
+DUMBCALC_SRC = $(call LIST_SRCS,$(DUMBCALC_DIR))
+DUMBCALC_OBJ = $(call SUBST_OBJ,$(DUMBCALC_SRC),$(DUMBCALC_DIR))
+
+$(DUMBCALC_ELF): $(DUMBCALC_OBJ) $(LIBHPBSP) $(LIBHPUTILS)
+	$(ARM_LD) $(ARM_LDFLAGS) -T $(DUMBCALC_DIR)/ldscript $^ -lgcc -o $@ --entry 0x30000000
+
+$(DUMBCALC_DIR)/%.o: $(DUMBCALC_DIR)/%.c
+	$(ARM_CC) $(ARM_CFLAGS) -c $< -o $@
+
+$(DUMBCALC_DIR)/%.o: $(DUMBCALC_DIR)/%.S
+	$(ARM_AS) $(ARM_AFLAGS) $< -o $@
+
+CLEAN_FILES += $(DUMBCALC_DIR)/*.o

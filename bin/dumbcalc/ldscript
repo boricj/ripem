@@ -1,0 +1,33 @@
+MEMORY
+{
+	dram : ORIGIN = 0x30000000, LENGTH = 32768K
+}
+
+PHDRS
+{
+	load PT_LOAD;
+}
+
+SECTIONS
+{
+	/* Force bootstrap at start of binary. */
+	.startup : ALIGN(8) {
+		*(.start*);
+	} >dram :load
+
+	.text : ALIGN(8) {
+		*(.text*);
+	} >dram :load
+
+	.data : ALIGN(8) {
+		*(.data*);
+	} >dram :load
+
+	.rodata : ALIGN(8) {
+		*(.rodata*);
+	} >dram :load
+
+	.bss : ALIGN(8) {
+		*(.bss*);
+	} >dram :load
+}

@@ -6,6 +6,8 @@
 
 void lcd_init(void)
 {
+	lcd_set_mode(VIDMODE_DISABLED);
+	lcd_set_active_buffer(0);
 	return;
 }
 

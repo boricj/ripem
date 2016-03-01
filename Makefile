@@ -9,7 +9,9 @@ CROSS_COMPILER_TRIPLET = arm-none-eabi
 #
 # >>> Put your payloads here <<<
 #
-RIPEM_PAYLOAD = bin/dummy/dummy.elf bin/gdbstub/gdbstub_serial.elf
+RIPEM_PAYLOAD =  bin/dummy/dummy.elf
+RIPEM_PAYLOAD += bin/gdbstub/gdbstub_serial.elf
+RIPEM_PAYLOAD += bin/dumbcalc/dumbcalc.elf
 #RIPEM_PAYLOAD += prime_os.elf
 
 #-------------------------------------------------------------------------------

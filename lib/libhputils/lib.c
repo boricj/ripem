@@ -124,11 +124,12 @@ char* itoa(int val, char *str, int base) {
 
 	if (val == 0)
 		*str++ = '0';
-	else if (base == 10 && val < 0) {
-		*str++ = '-';
-		val = -val;
-	}
 	else {
+		if (base == 10 && val < 0) {
+			*str++ = '-';
+			val = -val;
+		}
+
 		int cpt = 0;
 
 		while (val != 0) {
