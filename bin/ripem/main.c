@@ -8,12 +8,15 @@
 
 #include "lib.h"
 #include "payload.h"
+#include "tinf.h"
 
 void main(unsigned r0, void *initial_stack) {
 	led_init();
 	keypad_init();
 	serial_init(115200);
 	rtc_init();
+
+	tinf_init();
 
 	/*
 	 * Print propaganda early on.
@@ -23,7 +26,6 @@ void main(unsigned r0, void *initial_stack) {
 	serial_puts("\n\n");
 
 	init_screen();
-	draw_splashscreen();
 
 	payload_item items[13];
 	int nb_payloads;

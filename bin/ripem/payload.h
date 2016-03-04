@@ -4,6 +4,7 @@
 typedef struct {
 	char name[36];
 	void *location;
+	unsigned size;
 } payload_item;
 
 int parse_payloads(payload_item *items);

@@ -27,5 +27,6 @@ $(RIPEM_PAYLOAD_OBJ): $(RIPEM_PAYLOAD)
 	rm -f $(RIPEM_DIR)/payload
 	mkdir $(RIPEM_DIR)/tmp
 	cp -f $(RIPEM_PAYLOAD) $(RIPEM_DIR)/tmp
-	cd $(RIPEM_DIR)/tmp && ls | cpio -ov -H newc | gzip -9 > ../payload.cpio.gz
-	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload $(RIPEM_DIR)/payload.cpio.gz $(RIPEM_PAYLOAD_OBJ)
+	gzip -9 $(RIPEM_DIR)/tmp/*
+	cd $(RIPEM_DIR)/tmp && ls | cpio -ov -H newc > ../payload.cpio
+	$(ARM_OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.payload $(RIPEM_DIR)/payload.cpio $(RIPEM_PAYLOAD_OBJ)

@@ -10,41 +10,26 @@
 #include "syscon.h"
 #include "tinf.h"
 
-extern uint32_t _binary_bin_ripem_payload_cpio_gz_start;
-extern uint32_t _binary_bin_ripem_payload_cpio_gz_end;
+extern uint32_t _binary_bin_ripem_payload_cpio_start;
+extern uint32_t _binary_bin_ripem_payload_cpio_end;
 
 /*
  * Memory map :
  * 0x30000000 - 0x31000000 : free (for payload loading, 16 MiB)
  * 0x31000000 - 0x31100000 : Rip'Em (PRIME_OS.ROM)
  * 0x31100000 - 0x31196000 : framebuffers
- * 0x31196000 - 0x32000000 : free (for decompressing CPIO archive) and stack
+ * 0x31196000 - 0x32000000 : free (for decompressing) and stack
  */
 
 #define FRAMEBUF0  0x31100000
 #define FRAMEBUF1  0x3114B000
-#define CPIOTARGET 0x31196000
+#define GZIPTARGET 0x31196000
 
 int parse_payloads(payload_item *items)
 {
-	struct cpio_newc_header *hdr = (struct cpio_newc_header *)CPIOTARGET;
+	struct cpio_newc_header *hdr = (struct cpio_newc_header *)&_binary_bin_ripem_payload_cpio_start;
 	int i = 0;
-	unsigned destlen = 0;
 	char buf[9];
-
-	/* Decompress CPIO file. */
-	tinf_init();
-	int r = tinf_gzip_uncompress((void*)CPIOTARGET, &destlen,
-	                             &_binary_bin_ripem_payload_cpio_gz_start,
-	                             (int)&_binary_bin_ripem_payload_cpio_gz_end - (int)&_binary_bin_ripem_payload_cpio_gz_start);
-	if (r != TINF_OK) {
-		serial_puts("Error when decompressing CPIO archive.\n");
-		goto builtin;
-	}
-
-	serial_puts("Decompressed ");
-	serial_puts(itoa((uint32_t)destlen, buf, 10));
-	serial_puts(" bytes for CPIO archive.\n");
 
 	/* Space on screen for 13 items, one is reserved. */
 	for (i = 0; i < 12; i++) {
@@ -87,13 +72,13 @@ int parse_payloads(payload_item *items)
 		memcpy(items[i].name, hdr_name, namesize);
 		items[i].name[namesize+1] = '\0';
 		items[i].location = hdr_data;
+		items[i].size = filesize;
 
 		hdr = (struct cpio_newc_header *)(hdr_data + filesize);
 		if (filesize % 4)
 			hdr = (struct cpio_newc_header *)(((char*)hdr) + (4 - (filesize % 4)));
 	}
 
-builtin:
 	/* Add reboot option. */
 	strcpy(items[i].name, "Reboot");
 	items[i++].location = 0;
@@ -127,12 +112,39 @@ void draw_banner(char *screen)
 
 void draw_splashscreen()
 {
-	const char *msg = "Uncompressing payloads...";
 	char *screen0 = (char*)FRAMEBUF0;
 
-	draw_banner(screen0);
+	lcd_set_active_buffer(0);
+	memset(screen0+320*32*4, 0xFF, 320*(240-32)*4);
+
+	const char *msg = "Loading payload...";
+
 	font_draw_text_r8g8b8(msg, (320 - (strlen(msg)*9)) / 2, 112, screen0, 0x0, 0xFFFFFF);
 }
+
+void launch_payload(payload_item *item, unsigned r0, void *initial_stack)
+{
+	if (item->location != 0) {
+		uint32_t entry;
+		unsigned destlen;
+
+		draw_splashscreen();
+
+		if (tinf_gzip_uncompress((void*)GZIPTARGET, &destlen, item->location, item->size) == TINF_OK) {
+			if (load_elf((void*)GZIPTARGET, &entry) != ELF_OK)
+				return;
+		}
+		else if (load_elf(item->location, &entry) != ELF_OK)
+			return;
+
+		run_elf(r0, initial_stack, entry);
+	}
+	else {
+		if (strcmp(item->name, "Reboot") == 0)
+			syscon_reset();
+	}
+}
+
 
 void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack)
 {
@@ -191,15 +203,7 @@ void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack
 
 			else if (keypad_get(KEY_ENTER) == 1) {
 				done_something = 1;
-				if (items[selection].location != 0) {
-					uint32_t entry;
-					if (load_elf(items[selection].location, &entry) == ELF_OK)
-						run_elf(r0, initial_stack, entry);
-				}
-				else {
-					if (strcmp(items[selection].name, "Reboot") == 0)
-						syscon_reset();
-				}
+				launch_payload(&items[selection], r0, initial_stack);
 			}
 		}
 	}
