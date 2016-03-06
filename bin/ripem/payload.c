@@ -145,66 +145,47 @@ void launch_payload(payload_item *item, unsigned r0, void *initial_stack)
 	}
 }
 
+void word2hex(uint32_t word, char *hex)
+{
+	byte2hex((word >> 24) & 0xFF, hex);
+	byte2hex((word >> 16) & 0xFF, hex+2);
+	byte2hex((word >> 8 ) & 0xFF, hex+4);
+	byte2hex((word      ) & 0xFF, hex+6);
+}
 
 void menu_payloads(payload_item *items, int nb, unsigned r0, void *initial_stack)
 {
-	int selection = 0;
-	char *screen;
+	(void)items;
+	(void)nb;
+	(void)r0;
+	(void)initial_stack;
 
-	char *screen0 = (char*)FRAMEBUF0, *screen1 = (char*)FRAMEBUF1;
+	char *screen = (char*)FRAMEBUF0;
 
-	while (1) {
-		/* Use double buffer for flicker-free operation. */
-		if (lcd_get_active_buffer() == 0)
-			screen = screen1;
-		else
-			screen = screen0;
+	memset(screen, 0xFF, 320*240*4);
 
-		memset(screen, 0xFF, 320*240*4);
-		draw_banner(screen);
+	char buf[12];
+	buf[0] = '0';
+	buf[1] = 'x';
 
-		/* Draw menu. */
-		for (int i = 0; i < nb; i++) {
-			if (selection == i) {
-				memset(screen+320*4*16*(2+i), 0, 320*4*16);
-				font_draw_text_r8g8b8(items[i].name, 0, 32+16*i, screen, 0xFFFFFF, 0x0);
-			}
-			else {
-				memset(screen+320*4*16*(2+i), 0xFF, 320*4*16);
-				font_draw_text_r8g8b8(items[i].name, 0, 32+16*i, screen, 0x0, 0xFFFFFF);
-			}
-		}
+	uint32_t *addr = (uint32_t*)0x56000000;
 
-		/* Change buffer to show on screen. */
-		if (lcd_get_active_buffer() == 0)
-			lcd_set_active_buffer(1);
-		else
-			lcd_set_active_buffer(0);
+	for (int y = 0; y < 15; y++) {
+		/* Draw address. */
+		memset(buf+2, 0, 10);
+		word2hex((uint32_t)addr, &buf[2]);
+		buf[10] = ':';
+		buf[11] = 0;
+		font_draw_text_r8g8b8(buf, 0, y*16, screen, 0x777777, 0xFFFFFF);
 
-		/* Poll keyboard. */
-		int done_something = 0;
-
-		while (!done_something) {
-			keypad_scan();
-
-			if (keypad_get(KEY_UP) == 1) {
-				done_something = 1;
-				while (keypad_get(KEY_UP) == 1) keypad_scan();
-				if (selection > 0)
-					selection--;
-			}
-
-			else if (keypad_get(KEY_DOWN) == 1) {
-				done_something = 1;
-				while (keypad_get(KEY_DOWN) == 1) keypad_scan();
-				if (selection < nb - 1)
-					selection++;
-			}
-
-			else if (keypad_get(KEY_ENTER) == 1) {
-				done_something = 1;
-				launch_payload(&items[selection], r0, initial_stack);
-			}
+		for (int x = 0; x < 2; x++) {
+			/* Draw value. */
+			memset(buf+2, 0, 10);
+			word2hex(*addr, &buf[2]);
+			font_draw_text_r8g8b8(buf, (x+1)*11*9+9, y*16, screen, 0x0, 0xFFFFFF);
+			addr++;
 		}
 	}
+
+	while (1);
 }

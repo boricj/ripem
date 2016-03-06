@@ -10,12 +10,8 @@
 #include "payload.h"
 #include "tinf.h"
 
-void main(unsigned r0, void *initial_stack) {
-	led_init();
-	keypad_init();
-	serial_init(115200);
-	rtc_init();
-
+void main(unsigned r0, void *initial_stack)
+{
 	tinf_init();
 
 	/*
