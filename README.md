@@ -6,7 +6,7 @@ As always : please void your warranty in a responsible manner. I will decline an
 ## How to build
 On Debian and Debian-like systems :
  * Install the ARM cross-compiler toolchain (`apt-get install binutils-arm-none-eabi gcc-arm-none-eabi gdb-arm-none-eabi`) ;
- * Install support libraries for tools (`apt-get install libelf1 libelf-dev`) ;
+ * Install support packages (`apt-get install build-essential libelf1 libelf-dev`) ;
  * Run `make` inside the top-level directory.
 
 Everything else : you are on your own.
