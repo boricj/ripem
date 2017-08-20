@@ -39,6 +39,7 @@
 #define GPHCON    (volatile uint32_t*)0x56000070
 
 /* RTC */
+#define RTCCON    (volatile uint32_t*)0x57000040
 #define BCDSEC    (volatile uint32_t*)0x57000070
 #define BCDMIN    (volatile uint32_t*)0x57000074
 #define BCDHOUR   (volatile uint32_t*)0x57000078

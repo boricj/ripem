@@ -7,6 +7,7 @@ uint8_t bcd2byte(uint8_t bcd) {
 }
 
 void rtc_init(void) {
+	*RTCCON = 0x11;
 	return;
 }
 
